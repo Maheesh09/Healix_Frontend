@@ -28,11 +28,11 @@ const FeaturesSection = () => {
       <div className="container">
         {/* Section header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4 animate-fade-in">
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             Say Goodbye to{" "}
             <span className="text-healix-coral">Report Chaos</span>
           </h2>
-          <p className="text-muted-foreground text-lg animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+          <p className="text-muted-foreground text-lg">
             Transform the way you manage your health records
           </p>
         </div>
@@ -42,8 +42,7 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="border border-border/50 shadow-card hover:shadow-card-hover transition-all duration-500 bg-card group cursor-pointer animate-fade-in-up hover:-translate-y-2"
-              style={{ animationDelay: `${0.2 + index * 0.15}s` }}
+              className="border border-border/50 shadow-card hover:shadow-card-hover transition-all duration-300 bg-card group cursor-pointer hover:-translate-y-1"
             >
               <CardContent className="p-6">
                 <div
