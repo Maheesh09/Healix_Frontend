@@ -13,7 +13,7 @@ const CTASection = () => {
           <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg animate-float" />
           
           {/* Icon */}
-          <div className="relative mx-auto w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6 animate-bounce-soft">
+          <div className="relative mx-auto w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6 animate-bounce-gentle">
             <Shield className="h-8 w-8 text-white" />
           </div>
           
