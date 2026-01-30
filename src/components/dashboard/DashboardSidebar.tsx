@@ -10,6 +10,7 @@ import {
   User,
   Settings,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
@@ -26,6 +27,24 @@ const bottomItems = [
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.03,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0.7, x: -8 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] as const }
+  },
+};
+
 const DashboardSidebar = () => {
   const location = useLocation();
 
@@ -38,26 +57,41 @@ const DashboardSidebar = () => {
           </span>
         </div>
         
-        <nav className="space-y-1 px-3">
-          {menuItems.map((item, index) => {
+        <motion.nav 
+          className="space-y-1 px-3"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {menuItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:translate-x-1 ${
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }`}
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <item.icon className={`h-5 w-5 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
-                {item.label}
-              </Link>
+              <motion.div key={item.href} variants={itemVariants}>
+                <motion.div
+                  whileHover={{ x: 4 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Link
+                    to={item.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
+                      isActive
+                        ? "bg-sidebar-accent text-sidebar-primary"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                    }`}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <item.icon className={`h-5 w-5 ${isActive ? "scale-110" : ""}`} />
+                    </motion.div>
+                    {item.label}
+                  </Link>
+                </motion.div>
+              </motion.div>
             );
           })}
-        </nav>
+        </motion.nav>
       </div>
 
       {/* Bottom section */}
@@ -66,28 +100,43 @@ const DashboardSidebar = () => {
           {bottomItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
-              <Link
+              <motion.div 
                 key={item.href}
-                to={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 hover:translate-x-1 ${
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                }`}
+                whileHover={{ x: 4 }}
+                transition={{ duration: 0.2 }}
               >
-                <item.icon className={`h-5 w-5 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
-                {item.label}
-              </Link>
+                <Link
+                  to={item.href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
+                    isActive
+                      ? "bg-sidebar-accent text-sidebar-primary"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  }`}
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <item.icon className={`h-5 w-5 ${isActive ? "scale-110" : ""}`} />
+                  </motion.div>
+                  {item.label}
+                </Link>
+              </motion.div>
             );
           })}
         </nav>
 
         {/* Disclaimer */}
-        <div className="mt-6 mx-3 p-3 rounded-xl bg-muted/50">
+        <motion.div 
+          className="mt-6 mx-3 p-3 rounded-xl bg-muted/50"
+          initial={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
           <p className="text-xs text-muted-foreground leading-relaxed">
             Healix provides informational insights and does not replace professional medical advice.
           </p>
-        </div>
+        </motion.div>
       </div>
     </aside>
   );

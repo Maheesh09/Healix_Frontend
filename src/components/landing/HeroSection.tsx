@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import heroIllustration from "@/assets/hero-illustration.png";
 
 const HeroSection = () => {
@@ -10,50 +11,98 @@ const HeroSection = () => {
       <div className="absolute inset-0 hero-gradient" />
       
       {/* Animated decorative circles */}
-      <div className="absolute top-20 right-1/4 w-3 h-3 bg-white/30 rounded-full animate-float" />
-      <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-white/20 rounded-full animate-float" style={{ animationDelay: "0.5s" }} />
-      <div className="absolute top-40 right-20 w-4 h-4 bg-white/20 rounded-full animate-float" style={{ animationDelay: "1s" }} />
-      <div className="absolute top-60 left-20 w-3 h-3 bg-white/15 rounded-full animate-float" style={{ animationDelay: "1.5s" }} />
-      <div className="absolute bottom-48 left-1/4 w-2 h-2 bg-white/25 rounded-full animate-float" style={{ animationDelay: "2s" }} />
+      <motion.div 
+        className="absolute top-20 right-1/4 w-3 h-3 bg-white/30 rounded-full"
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div 
+        className="absolute bottom-32 right-1/3 w-2 h-2 bg-white/20 rounded-full"
+        animate={{ y: [0, -8, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+      />
+      <motion.div 
+        className="absolute top-40 right-20 w-4 h-4 bg-white/20 rounded-full"
+        animate={{ y: [0, -12, 0] }}
+        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      />
+      <motion.div 
+        className="absolute top-60 left-20 w-3 h-3 bg-white/15 rounded-full"
+        animate={{ y: [0, -8, 0] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+      />
+      <motion.div 
+        className="absolute bottom-48 left-1/4 w-2 h-2 bg-white/25 rounded-full"
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
       
       <div className="container relative z-10 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <div className="text-white space-y-6">
-            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+            <motion.h1 
+              className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
+              initial={{ opacity: 0.8, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
               Smart and<br />
               Secure Health<br />
               <span className="text-white/90">PROFILE</span>
-            </h1>
+            </motion.h1>
             
-            <p className="text-lg text-white/80 max-w-md leading-relaxed">
+            <motion.p 
+              className="text-lg text-white/80 max-w-md leading-relaxed"
+              initial={{ opacity: 0.8, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
+            >
               Understand, track and organize your complete medical history in one secure digital profile. Access your health data anytime, anywhere.
-            </p>
+            </motion.p>
             
-            <div>
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full bg-white text-primary hover:bg-white/90 font-semibold px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            <motion.div
+              initial={{ opacity: 0.8, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <Link to="/signup">
-                  Get Started
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
-            </div>
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-full bg-white text-primary hover:bg-white/90 font-semibold px-8 transition-shadow duration-300 hover:shadow-xl"
+                >
+                  <Link to="/signup">
+                    Get Started
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </motion.div>
           </div>
           
           {/* Right content - Doctor illustration */}
-          <div className="relative flex justify-center lg:justify-end">
-            <div className="relative animate-float" style={{ animationDuration: "4s" }}>
+          <motion.div 
+            className="relative flex justify-center lg:justify-end"
+            initial={{ opacity: 0.8, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <motion.div 
+              className="relative"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
               <img
                 src={heroIllustration}
                 alt="Healthcare professional"
                 className="h-[400px] lg:h-[500px] w-auto object-contain drop-shadow-2xl"
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
       
