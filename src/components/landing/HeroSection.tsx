@@ -9,40 +9,44 @@ const HeroSection = () => {
       {/* Background gradient */}
       <div className="absolute inset-0 hero-gradient" />
       
-      {/* Decorative circles */}
-      <div className="absolute top-20 right-1/4 w-3 h-3 bg-white/30 rounded-full" />
-      <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-white/20 rounded-full" />
-      <div className="absolute top-40 right-20 w-4 h-4 bg-white/20 rounded-full" />
+      {/* Animated decorative circles */}
+      <div className="absolute top-20 right-1/4 w-3 h-3 bg-white/30 rounded-full animate-float" />
+      <div className="absolute bottom-32 right-1/3 w-2 h-2 bg-white/20 rounded-full animate-float" style={{ animationDelay: "0.5s" }} />
+      <div className="absolute top-40 right-20 w-4 h-4 bg-white/20 rounded-full animate-float" style={{ animationDelay: "1s" }} />
+      <div className="absolute top-60 left-20 w-3 h-3 bg-white/15 rounded-full animate-float" style={{ animationDelay: "1.5s" }} />
+      <div className="absolute bottom-48 left-1/4 w-2 h-2 bg-white/25 rounded-full animate-float" style={{ animationDelay: "2s" }} />
       
       <div className="container relative z-10 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <div className="text-white space-y-6">
-            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight animate-fade-in">
               Smart and<br />
               Secure Health<br />
               <span className="text-white/90">PROFILE</span>
             </h1>
             
-            <p className="text-lg text-white/80 max-w-md leading-relaxed">
+            <p className="text-lg text-white/80 max-w-md leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
               Understand, track and organize your complete medical history in one secure digital profile. Access your health data anytime, anywhere.
             </p>
             
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-white text-primary hover:bg-white/90 font-semibold px-8"
-            >
-              <Link to="/signup">
-                Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+            <div className="animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-white text-primary hover:bg-white/90 font-semibold px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              >
+                <Link to="/signup">
+                  Get Started
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </div>
           </div>
           
           {/* Right content - Doctor illustration */}
-          <div className="relative flex justify-center lg:justify-end">
-            <div className="relative">
+          <div className="relative flex justify-center lg:justify-end animate-slide-in-right">
+            <div className="relative animate-float" style={{ animationDuration: "4s" }}>
               <img
                 src={heroIllustration}
                 alt="Healthcare professional"

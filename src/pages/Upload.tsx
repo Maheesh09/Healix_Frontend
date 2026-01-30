@@ -24,13 +24,13 @@ const UploadPage = () => {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
-      <div>
+      <div className="animate-fade-in">
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Upload Report</h1>
         <p className="text-muted-foreground">Add new medical reports to your health profile</p>
       </div>
 
       {/* Upload Area */}
-      <Card className="shadow-card border-0">
+      <Card className="shadow-card border-0 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
         <CardContent className="p-8">
           {/* Drag and Drop Zone */}
           <div
@@ -43,7 +43,7 @@ const UploadPage = () => {
                 : "border-border hover:border-primary/50"
             }`}
           >
-            <div className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center animate-bounce-soft">
               <UploadIcon className="h-8 w-8 text-primary-foreground" />
             </div>
             
@@ -55,11 +55,11 @@ const UploadPage = () => {
             </p>
             
             <div className="flex justify-center gap-4">
-              <Button variant="outline" className="rounded-xl gap-2">
+              <Button variant="outline" className="rounded-xl gap-2 transition-all duration-300 hover:scale-105 hover:border-primary">
                 <FileText className="h-4 w-4" />
                 PDF
               </Button>
-              <Button variant="outline" className="rounded-xl gap-2">
+              <Button variant="outline" className="rounded-xl gap-2 transition-all duration-300 hover:scale-105 hover:border-primary">
                 <Image className="h-4 w-4" />
                 Images
               </Button>
@@ -76,7 +76,7 @@ const UploadPage = () => {
       </div>
 
       {/* WhatsApp Upload */}
-      <Card className="shadow-card border-2 border-success/30">
+      <Card className="shadow-card border-2 border-success/30 animate-fade-in-up hover:shadow-card-hover transition-all duration-300" style={{ animationDelay: "0.2s" }}>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
