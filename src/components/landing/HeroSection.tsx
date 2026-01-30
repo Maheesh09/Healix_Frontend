@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import doctorHero from "@/assets/doctor-hero.png";
+import heroIllustration from "@/assets/hero-illustration.png";
 
 const HeroSection = () => {
   return (
@@ -44,7 +44,7 @@ const HeroSection = () => {
           <div className="relative flex justify-center lg:justify-end">
             <div className="relative">
               <img
-                src={doctorHero}
+                src={heroIllustration}
                 alt="Healthcare professional"
                 className="h-[400px] lg:h-[500px] w-auto object-contain drop-shadow-2xl"
               />
