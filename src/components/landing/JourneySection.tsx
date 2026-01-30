@@ -44,7 +44,7 @@ const JourneySection = () => {
                 size="lg"
                 className="rounded-full bg-primary hover:bg-primary/90 font-semibold px-8 transition-shadow duration-300 hover:shadow-lg"
               >
-                <Link to="/dashboard">Explore Healix</Link>
+                <Link to="/explore">Explore Healix</Link>
               </Button>
             </motion.div>
           </motion.div>
