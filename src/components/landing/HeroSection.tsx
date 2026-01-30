@@ -20,17 +20,17 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <div className="text-white space-y-6">
-            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight animate-fade-in">
+            <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
               Smart and<br />
               Secure Health<br />
               <span className="text-white/90">PROFILE</span>
             </h1>
             
-            <p className="text-lg text-white/80 max-w-md leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+            <p className="text-lg text-white/80 max-w-md leading-relaxed">
               Understand, track and organize your complete medical history in one secure digital profile. Access your health data anytime, anywhere.
             </p>
             
-            <div className="animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+            <div>
               <Button
                 asChild
                 size="lg"
@@ -45,7 +45,7 @@ const HeroSection = () => {
           </div>
           
           {/* Right content - Doctor illustration */}
-          <div className="relative flex justify-center lg:justify-end animate-slide-in-right">
+          <div className="relative flex justify-center lg:justify-end">
             <div className="relative animate-float" style={{ animationDuration: "4s" }}>
               <img
                 src={heroIllustration}

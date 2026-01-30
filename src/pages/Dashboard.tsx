@@ -101,7 +101,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Welcome message */}
-      <div className="opacity-0 animate-fade-in">
+      <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
           Welcome back, M
         </h1>
@@ -115,8 +115,7 @@ const Dashboard = () => {
         {summaryCards.map((card, index) => (
           <Card 
             key={index} 
-            className="shadow-card border-0 opacity-0 animate-fade-in-up cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover group"
-            style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+            className="shadow-card border-0 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover group"
           >
             <CardContent className="p-4">
               <div className={`w-10 h-10 rounded-xl ${card.color} flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110`}>
@@ -132,7 +131,7 @@ const Dashboard = () => {
       {/* Main content grid */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Health Snapshot - Takes 2 columns */}
-        <Card className="lg:col-span-2 shadow-card border-0 opacity-0 animate-slide-in-left" style={{ animationDelay: "0.3s" }}>
+        <Card className="lg:col-span-2 shadow-card border-0">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-lg font-semibold">Health Snapshot</CardTitle>
             <Link 
@@ -222,7 +221,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="shadow-card border-0 opacity-0 animate-slide-in-right" style={{ animationDelay: "0.35s" }}>
+        <Card className="shadow-card border-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
           </CardHeader>
@@ -255,7 +254,7 @@ const Dashboard = () => {
       </div>
 
       {/* Health Insights */}
-      <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
+      <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">Health Insights</h2>
           <Link 
@@ -269,8 +268,7 @@ const Dashboard = () => {
           {healthInsights.map((insight, index) => (
             <Card 
               key={index} 
-              className={`shadow-card border opacity-0 animate-fade-in-up cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover group ${insight.color}`}
-              style={{ animationDelay: `${0.45 + index * 0.05}s` }}
+              className={`shadow-card border cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover group ${insight.color}`}
             >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">

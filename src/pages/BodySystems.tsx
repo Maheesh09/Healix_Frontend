@@ -44,7 +44,7 @@ const BodySystems = () => {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
-      <div className="animate-fade-in">
+      <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Body Systems</h1>
         <p className="text-muted-foreground">View your health organized by body system</p>
       </div>
@@ -54,8 +54,7 @@ const BodySystems = () => {
         {bodySystems.map((system, index) => (
           <Card 
             key={system.id} 
-            className="shadow-card border-0 hover:shadow-card-hover transition-all duration-500 cursor-pointer group animate-fade-in-up hover:-translate-y-2"
-            style={{ animationDelay: `${0.1 + index * 0.15}s` }}
+            className="shadow-card border-0 hover:shadow-card-hover transition-all duration-300 cursor-pointer group hover:-translate-y-1"
           >
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">

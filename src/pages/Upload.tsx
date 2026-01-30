@@ -24,13 +24,13 @@ const UploadPage = () => {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
-      <div className="animate-fade-in">
+      <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Upload Report</h1>
         <p className="text-muted-foreground">Add new medical reports to your health profile</p>
       </div>
 
       {/* Upload Area */}
-      <Card className="shadow-card border-0 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+      <Card className="shadow-card border-0">
         <CardContent className="p-8">
           {/* Drag and Drop Zone */}
           <div
@@ -43,7 +43,7 @@ const UploadPage = () => {
                 : "border-border hover:border-primary/50"
             }`}
           >
-            <div className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center animate-bounce-soft">
+            <div className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center animate-bounce-gentle">
               <UploadIcon className="h-8 w-8 text-primary-foreground" />
             </div>
             

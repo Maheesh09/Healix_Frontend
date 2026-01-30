@@ -38,22 +38,22 @@ const Signup = () => {
       
       <div className="w-full max-w-md space-y-8 relative z-10">
         {/* Logo */}
-        <div className="flex justify-center opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <div className="flex justify-center">
           <Link to="/" className="transition-transform duration-300 hover:scale-105">
             <HealixLogo size="lg" />
           </Link>
         </div>
 
         {/* Signup Card */}
-        <Card className="shadow-card-lg border-0 opacity-0 animate-scale-in bg-card/95 backdrop-blur-sm" style={{ animationDelay: "0.2s" }}>
+        <Card className="shadow-card-lg border-0 bg-card/95 backdrop-blur-sm">
           <CardContent className="p-8">
             <div className="space-y-6">
-              <div className="opacity-0 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+              <div>
                 <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
                 <p className="text-muted-foreground mt-1">Start organizing your health records today</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 opacity-0 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
@@ -164,7 +164,7 @@ const Signup = () => {
               </form>
 
               {/* Login link */}
-              <p className="text-center text-muted-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.5s" }}>
+              <p className="text-center text-muted-foreground">
                 Already have an account?{" "}
                 <Link 
                   to="/login" 
