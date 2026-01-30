@@ -35,22 +35,22 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center bg-secondary/30 p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
-        <div className="flex justify-center">
-          <Link to="/">
+        <div className="flex justify-center animate-fade-in-down">
+          <Link to="/" className="transition-transform hover:scale-105">
             <HealixLogo size="lg" />
           </Link>
         </div>
 
         {/* Signup Card */}
-        <Card className="shadow-card-lg border-0">
+        <Card className="shadow-card-lg border-0 animate-scale-in" style={{ animationDelay: "0.1s" }}>
           <CardContent className="p-8">
             <div className="space-y-6">
-              <div>
+              <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
                 <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
                 <p className="text-muted-foreground mt-1">Start organizing your health records today</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
                 {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
@@ -153,7 +153,7 @@ const Signup = () => {
                 {/* Submit */}
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                  className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                 >
                   Create Account
                   <ArrowRight className="ml-2 h-5 w-5" />

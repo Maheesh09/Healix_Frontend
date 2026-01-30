@@ -103,7 +103,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Welcome message */}
-      <div>
+      <div className="animate-fade-in">
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
           Welcome back, M
         </h1>
@@ -115,9 +115,13 @@ const Dashboard = () => {
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {summaryCards.map((card, index) => (
-          <Card key={index} className="shadow-card border-0">
+          <Card 
+            key={index} 
+            className="shadow-card border-0 hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 cursor-pointer animate-fade-in-up group"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
             <CardContent className="p-4">
-              <div className={`w-10 h-10 rounded-xl ${card.color} flex items-center justify-center mb-3`}>
+              <div className={`w-10 h-10 rounded-xl ${card.color} flex items-center justify-center mb-3 transition-transform duration-300 group-hover:scale-110`}>
                 <card.icon className="h-5 w-5" />
               </div>
               <p className="text-sm text-muted-foreground">{card.label}</p>
@@ -130,7 +134,7 @@ const Dashboard = () => {
       {/* Main content grid */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Health Snapshot - Takes 2 columns */}
-        <Card className="lg:col-span-2 shadow-card border-0">
+        <Card className="lg:col-span-2 shadow-card border-0 animate-slide-in-left" style={{ animationDelay: "0.3s" }}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-lg font-semibold">Health Snapshot</CardTitle>
             <Link to="/trends" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -217,15 +221,18 @@ const Dashboard = () => {
         </Card>
 
         {/* Recent Activity */}
-        <Card className="shadow-card border-0">
+        <Card className="shadow-card border-0 animate-slide-in-right" style={{ animationDelay: "0.4s" }}>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div 
+                  key={index} 
+                  className="flex items-start gap-3 hover:bg-muted/30 p-2 -mx-2 rounded-lg transition-colors cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 transition-transform hover:scale-110">
                     <activity.icon className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -247,19 +254,23 @@ const Dashboard = () => {
       </div>
 
       {/* Health Insights */}
-      <div>
+      <div className="animate-fade-in-up" style={{ animationDelay: "0.5s" }}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">Health Insights</h2>
-          <Link to="/trends" className="text-sm text-primary hover:underline flex items-center gap-1">
+          <Link to="/trends" className="text-sm text-primary hover:underline flex items-center gap-1 transition-transform hover:translate-x-1">
             View All <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="grid md:grid-cols-3 gap-4">
           {healthInsights.map((insight, index) => (
-            <Card key={index} className={`shadow-card border ${insight.color}`}>
+            <Card 
+              key={index} 
+              className={`shadow-card border ${insight.color} hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 cursor-pointer group`}
+              style={{ animationDelay: `${0.6 + index * 0.1}s` }}
+            >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className={`w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0`}>
+                  <div className={`w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110`}>
                     <Lightbulb className={`h-4 w-4 ${insight.iconColor}`} />
                   </div>
                   <div>

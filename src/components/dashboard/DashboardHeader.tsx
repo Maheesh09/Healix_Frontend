@@ -14,7 +14,7 @@ const DashboardHeader = () => {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/dashboard">
@@ -39,7 +39,7 @@ const DashboardHeader = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button asChild className="rounded-full bg-primary hover:bg-primary/90">
+          <Button asChild className="rounded-full bg-primary hover:bg-primary/90 transition-all duration-300 hover:scale-105 hover:shadow-lg">
             <Link to="/upload">
               <Upload className="h-4 w-4 mr-2" />
               Upload
