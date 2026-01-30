@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 
 const JourneySection = () => {
   return (
-    <section className="py-20 bg-background overflow-hidden">
+    <section id="about" className="py-20 bg-background overflow-hidden">
       <div className="container">
         <div className="max-w-3xl mx-auto text-center">
-          <motion.h2 
+          <motion.h2
             className="text-3xl lg:text-4xl font-bold text-foreground mb-4"
             initial={{ opacity: 0.8, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -17,8 +17,8 @@ const JourneySection = () => {
             Your Health Journey,{" "}
             <span className="text-healix-coral">Simplified</span>
           </motion.h2>
-          
-          <motion.p 
+
+          <motion.p
             className="text-muted-foreground text-lg mb-8 leading-relaxed"
             initial={{ opacity: 0.8, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -27,7 +27,7 @@ const JourneySection = () => {
           >
             Healix is your lifelong digital health companion. We help you organize, understand and track your medical records with AI-powered insights. Take control of your health data today.
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0.8, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

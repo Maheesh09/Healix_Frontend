@@ -43,7 +43,7 @@ const Explore = () => {
     <PageTransition>
       <div className="min-h-screen flex flex-col bg-background">
         {/* Header */}
-        <motion.header 
+        <motion.header
           className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
           initial={{ opacity: 0.9, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,20 +58,20 @@ const Explore = () => {
 
             <div className="flex items-center gap-3">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  variant="outline" 
-                  asChild 
-                  className="rounded-full border-primary text-primary hover:bg-primary/5 transition-colors duration-300"
+                <Button
+                  variant="outline"
+                  asChild
+                  className="rounded-full border-primary text-primary hover:bg-primary/5 transition-colors duration-300 px-3 sm:px-4"
                 >
                   <Link to="/">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to home
+                    <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Back to home</span>
                   </Link>
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  asChild 
+                <Button
+                  asChild
                   className="rounded-full bg-primary hover:bg-primary/90 transition-shadow duration-300 hover:shadow-lg"
                 >
                   <Link to="/signup">Get Started</Link>
@@ -85,7 +85,7 @@ const Explore = () => {
           {/* Why Healix is Different Section */}
           <section className="py-20 bg-background">
             <div className="container">
-              <motion.div 
+              <motion.div
                 className="text-center mb-12"
                 initial={{ opacity: 0.8, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -104,7 +104,7 @@ const Explore = () => {
                   <StaggerItem key={index}>
                     <HoverCard>
                       <div className="bg-card border border-border rounded-2xl p-6 h-full">
-                        <motion.div 
+                        <motion.div
                           className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4"
                           whileHover={{ scale: 1.1, rotate: 5 }}
                           transition={{ duration: 0.2 }}
@@ -128,7 +128,7 @@ const Explore = () => {
           {/* Built on Trust & Safety Section */}
           <section className="py-16 bg-muted/30">
             <div className="container">
-              <motion.div 
+              <motion.div
                 className="text-center mb-10"
                 initial={{ opacity: 0.8, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -169,7 +169,7 @@ const Explore = () => {
           {/* CTA Section */}
           <section className="py-16 bg-background">
             <div className="container">
-              <motion.div 
+              <motion.div
                 className="max-w-2xl mx-auto bg-card border border-border rounded-3xl p-10 text-center"
                 initial={{ opacity: 0.9, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -192,9 +192,9 @@ const Explore = () => {
                   <Button
                     asChild
                     size="lg"
-                    className="rounded-full bg-primary hover:bg-primary/90 font-semibold px-8 transition-shadow duration-300 hover:shadow-lg"
+                    className="rounded-full bg-primary hover:bg-primary/90 font-semibold px-6 sm:px-8 h-auto py-4 transition-shadow duration-300 hover:shadow-lg w-full sm:w-auto"
                   >
-                    <Link to="/signup">Start your Digital Health Journey</Link>
+                    <Link to="/signup" className="text-center leading-tight">Start your Digital Health<br className="sm:hidden" /> Journey</Link>
                   </Button>
                 </motion.div>
               </motion.div>
@@ -222,7 +222,7 @@ const Explore = () => {
                 <ul className="space-y-2">
                   {["Dashboard", "Reports", "Trends", "Upload"].map((link) => (
                     <li key={link}>
-                      <Link 
+                      <Link
                         to={`/${link.toLowerCase()}`}
                         className="text-muted-foreground text-sm hover:text-primary transition-colors duration-300"
                       >

@@ -116,6 +116,13 @@ const DashboardHeader = () => {
                           </Link>
                         );
                       })}
+                      <Link
+                        to="/"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/5 transition-colors duration-300"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Logout
+                      </Link>
                     </nav>
 
                     <div className="p-3 rounded-xl bg-muted/50">
@@ -151,7 +158,7 @@ const DashboardHeader = () => {
 
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="hidden sm:block">
             <Button variant="outline" asChild className="rounded-full border-primary text-primary hover:bg-primary/5 transition-colors duration-300">
-              <Link to="/login">
+              <Link to="/">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Link>

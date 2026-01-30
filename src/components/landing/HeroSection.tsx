@@ -6,7 +6,7 @@ import heroIllustration from "@/assets/hero-illustration.png";
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden">
+    <section id="home" className="relative overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 hero-gradient" />
 

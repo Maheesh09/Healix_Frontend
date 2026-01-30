@@ -49,7 +49,7 @@ const DashboardSidebar = () => {
   const location = useLocation();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 min-h-[calc(100vh-4rem)] bg-sidebar border-r border-sidebar-border">
+    <aside className="hidden lg:flex flex-col w-64 h-[calc(100vh-4rem)] sticky top-16 bg-sidebar border-r border-sidebar-border overflow-y-auto flex-shrink-0 z-30">
       <div className="flex-1 py-6">
         <div className="px-4 mb-4">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -74,8 +74,8 @@ const DashboardSidebar = () => {
                   <Link
                     to={item.href}
                     className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 overflow-hidden ${isActive
-                        ? "bg-sidebar-accent text-sidebar-primary shadow-sm"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                      ? "bg-sidebar-accent text-sidebar-primary shadow-sm"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                       }`}
                   >
                     {isActive && (
@@ -116,8 +116,8 @@ const DashboardSidebar = () => {
                 <Link
                   to={item.href}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
-                      ? "bg-sidebar-accent text-sidebar-primary"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                     }`}
                 >
                   <motion.div
