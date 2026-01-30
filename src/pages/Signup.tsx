@@ -27,35 +27,38 @@ const Signup = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to dashboard for demo
     window.location.href = "/dashboard";
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-secondary/30 p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-background p-4 py-8">
+      {/* Subtle decorative elements */}
+      <div className="fixed top-20 left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed bottom-20 right-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+      
+      <div className="w-full max-w-md space-y-8 relative z-10">
         {/* Logo */}
-        <div className="flex justify-center animate-fade-in-down">
-          <Link to="/" className="transition-transform hover:scale-105">
+        <div className="flex justify-center opacity-0 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+          <Link to="/" className="transition-transform duration-300 hover:scale-105">
             <HealixLogo size="lg" />
           </Link>
         </div>
 
         {/* Signup Card */}
-        <Card className="shadow-card-lg border-0 animate-scale-in" style={{ animationDelay: "0.1s" }}>
+        <Card className="shadow-card-lg border-0 opacity-0 animate-scale-in bg-card/95 backdrop-blur-sm" style={{ animationDelay: "0.2s" }}>
           <CardContent className="p-8">
             <div className="space-y-6">
-              <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <div className="opacity-0 animate-fade-in" style={{ animationDelay: "0.3s" }}>
                 <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
                 <p className="text-muted-foreground mt-1">Start organizing your health records today</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
+              <form onSubmit={handleSubmit} className="space-y-4 opacity-0 animate-fade-in" style={{ animationDelay: "0.4s" }}>
                 {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <div className="relative group">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-focus-within:text-primary" />
                     <Input
                       id="fullName"
                       name="fullName"
@@ -63,7 +66,7 @@ const Signup = () => {
                       placeholder="Enter your full name"
                       value={formData.fullName}
                       onChange={handleChange}
-                      className="pl-10 h-12 rounded-xl border-border bg-muted/30"
+                      className="pl-10 h-12 rounded-xl border-border/60 bg-muted/30 transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
@@ -71,8 +74,8 @@ const Signup = () => {
                 {/* Email */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-focus-within:text-primary" />
                     <Input
                       id="email"
                       name="email"
@@ -80,7 +83,7 @@ const Signup = () => {
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="pl-10 h-12 rounded-xl border-border bg-muted/30"
+                      className="pl-10 h-12 rounded-xl border-border/60 bg-muted/30 transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
@@ -88,8 +91,8 @@ const Signup = () => {
                 {/* Phone */}
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <div className="relative group">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-focus-within:text-primary" />
                     <Input
                       id="phone"
                       name="phone"
@@ -97,7 +100,7 @@ const Signup = () => {
                       placeholder="Enter your phone number"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="pl-10 h-12 rounded-xl border-border bg-muted/30"
+                      className="pl-10 h-12 rounded-xl border-border/60 bg-muted/30 transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
@@ -105,8 +108,8 @@ const Signup = () => {
                 {/* Password */}
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-focus-within:text-primary" />
                     <Input
                       id="password"
                       name="password"
@@ -114,12 +117,12 @@ const Signup = () => {
                       placeholder="Create a password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="pl-10 pr-10 h-12 rounded-xl border-border bg-muted/30"
+                      className="pl-10 pr-10 h-12 rounded-xl border-border/60 bg-muted/30 transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-300"
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -129,8 +132,8 @@ const Signup = () => {
                 {/* Confirm Password */}
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <div className="relative group">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-focus-within:text-primary" />
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
@@ -138,12 +141,12 @@ const Signup = () => {
                       placeholder="Confirm your password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="pl-10 pr-10 h-12 rounded-xl border-border bg-muted/30"
+                      className="pl-10 pr-10 h-12 rounded-xl border-border/60 bg-muted/30 transition-all duration-300 focus:border-primary focus:ring-2 focus:ring-primary/20"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-300"
                     >
                       {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -153,17 +156,20 @@ const Signup = () => {
                 {/* Submit */}
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                  className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
                 >
                   Create Account
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                 </Button>
               </form>
 
               {/* Login link */}
-              <p className="text-center text-muted-foreground">
+              <p className="text-center text-muted-foreground opacity-0 animate-fade-in" style={{ animationDelay: "0.5s" }}>
                 Already have an account?{" "}
-                <Link to="/login" className="text-primary font-medium hover:underline">
+                <Link 
+                  to="/login" 
+                  className="text-primary font-medium hover:text-primary/80 transition-colors duration-300"
+                >
                   Sign in
                 </Link>
               </p>

@@ -177,9 +177,88 @@
     background-color: #25D366;
   }
 
-  /* Smooth transitions */
+  /* Smooth transitions - base for all interactive elements */
   .transition-smooth {
-    @apply transition-all duration-200 ease-in-out;
+    @apply transition-all duration-300 ease-out;
+  }
+
+  /* Professional hover effects */
+  .hover-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .hover-lift:hover {
+    @apply -translate-y-1 shadow-card-hover;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 ease-out;
+  }
+  
+  .hover-scale:hover {
+    @apply scale-[1.02];
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
+  }
+
+  /* Button hover states */
+  .btn-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .btn-hover:hover {
+    @apply scale-[1.03] shadow-lg;
+  }
+  
+  .btn-hover:active {
+    @apply scale-[0.98];
+  }
+
+  /* Card hover effects */
+  .card-interactive {
+    @apply transition-all duration-300 ease-out cursor-pointer;
+  }
+  
+  .card-interactive:hover {
+    @apply -translate-y-1 shadow-card-hover;
+  }
+
+  /* Link hover with underline animation */
+  .link-hover {
+    @apply relative;
+  }
+  
+  .link-hover::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ease-out;
+  }
+  
+  .link-hover:hover::after {
+    @apply w-full;
+  }
+
+  /* Icon hover rotation */
+  .icon-hover {
+    @apply transition-transform duration-300 ease-out;
+  }
+  
+  .icon-hover:hover {
+    @apply rotate-12 scale-110;
+  }
+
+  /* Sidebar item hover */
+  .sidebar-hover {
+    @apply transition-all duration-200 ease-out;
+  }
+  
+  .sidebar-hover:hover {
+    @apply translate-x-1 bg-sidebar-accent/50;
   }
 }
 
@@ -195,11 +274,24 @@
     animation: health-score-fill 1.5s ease-out forwards;
   }
 
-  /* Fade in animation */
+  /* Stagger children animation - uses tailwind animations */
+  .stagger-children > * {
+    opacity: 0;
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 75ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 150ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 225ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 300ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 375ms; }
+
+  /* Keyframes for stagger animation */
   @keyframes fade-in {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -207,18 +299,8 @@
     }
   }
 
-  .animate-fade-in {
-    animation: fade-in 0.4s ease-out forwards;
+  /* Focus ring styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-background;
   }
-
-  /* Stagger children animation */
-  .stagger-children > * {
-    @apply animate-fade-in;
-  }
-
-  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-  .stagger-children > *:nth-child(2) { animation-delay: 50ms; }
-  .stagger-children > *:nth-child(3) { animation-delay: 100ms; }
-  .stagger-children > *:nth-child(4) { animation-delay: 150ms; }
-  .stagger-children > *:nth-child(5) { animation-delay: 200ms; }
 }
