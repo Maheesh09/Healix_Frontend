@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HealixLogo from "@/components/HealixLogo";
-import { Heart, MessageCircle, Brain, Shield, User, Lock, ArrowLeft, Phone, Mail, MapPin } from "lucide-react";
+import { Heart, MessageCircle, Brain, Shield, User, Lock, ArrowLeft, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { motion } from "framer-motion";
 import { PageTransition, StaggerContainer, StaggerItem, HoverCard } from "@/components/motion/MotionWrappers";
 
@@ -276,16 +276,23 @@ const Explore = () => {
               <p className="text-muted-foreground text-sm">
                 © 2026 Healix. All rights reserved.
               </p>
-              <div className="flex items-center gap-4">
-                {["facebook", "instagram", "linkedin", "twitter"].map((social) => (
-                  <motion.div
-                    key={social}
+              <div className="flex items-center gap-3">
+                {[
+                  { icon: Facebook, label: "Facebook" },
+                  { icon: Instagram, label: "Instagram" },
+                  { icon: Linkedin, label: "LinkedIn" },
+                  { icon: Twitter, label: "Twitter" },
+                ].map((social) => (
+                  <motion.a
+                    key={social.label}
+                    href="#"
                     className="w-10 h-10 bg-muted-foreground/20 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-colors duration-300"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
+                    aria-label={social.label}
                   >
-                    <span className="sr-only">{social}</span>
-                  </motion.div>
+                    <social.icon className="h-4 w-4 text-muted-foreground" />
+                  </motion.a>
                 ))}
               </div>
             </div>
