@@ -22,55 +22,21 @@ const HealixLogo = forwardRef<HTMLDivElement, HealixLogoProps>(
     };
 
     return (
-      <div 
+      <div
         ref={ref}
         className={cn(
-          "flex items-center gap-2 transition-all duration-300 hover:scale-[1.02]", 
+          "flex items-center gap-2 transition-all duration-300 hover:scale-[1.02]",
           className
         )}
       >
-        {/* DNA Helix Icon */}
-        <svg
-          className={cn(sizeClasses[size], "w-auto transition-transform duration-300")}
-          viewBox="0 0 40 40"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* DNA Strand 1 */}
-          <path
-            d="M12 4C12 4 28 12 28 20C28 28 12 36 12 36"
-            stroke="url(#gradient1)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-          />
-          {/* DNA Strand 2 */}
-          <path
-            d="M28 4C28 4 12 12 12 20C12 28 28 36 28 36"
-            stroke="url(#gradient2)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-          />
-          {/* Cross links */}
-          <line x1="14" y1="12" x2="26" y2="12" stroke="hsl(168 76% 42%)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="14" y1="20" x2="26" y2="20" stroke="hsl(168 76% 42%)" strokeWidth="2" strokeLinecap="round" />
-          <line x1="14" y1="28" x2="26" y2="28" stroke="hsl(168 76% 42%)" strokeWidth="2" strokeLinecap="round" />
-          
-          <defs>
-            <linearGradient id="gradient1" x1="12" y1="4" x2="28" y2="36" gradientUnits="userSpaceOnUse">
-              <stop stopColor="hsl(168 76% 42%)" />
-              <stop offset="1" stopColor="hsl(199 89% 48%)" />
-            </linearGradient>
-            <linearGradient id="gradient2" x1="28" y1="4" x2="12" y2="36" gradientUnits="userSpaceOnUse">
-              <stop stopColor="hsl(199 89% 48%)" />
-              <stop offset="1" stopColor="hsl(168 76% 42%)" />
-            </linearGradient>
-          </defs>
-        </svg>
-        
+        <img
+          src="/logo.png"
+          alt="Healix Logo"
+          className={cn(sizeClasses[size], "w-auto object-contain transition-transform duration-300")}
+        />
+
         {showText && (
-          <span className={cn("font-bold text-foreground transition-colors duration-300", textSizes[size])}>
+          <span className={cn("font-bold transition-colors duration-300", textSizes[size])}>
             Healix
           </span>
         )}

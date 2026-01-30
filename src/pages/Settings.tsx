@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Lock, 
-  Smartphone, 
-  Shield, 
-  Download, 
+import {
+  Lock,
+  Smartphone,
+  Shield,
+  Download,
   Database,
   ChevronRight,
   LogOut,
@@ -44,7 +44,7 @@ const dataSettings = [
 
 const Settings = () => {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Settings</h1>
@@ -117,9 +117,9 @@ const Settings = () => {
           <LogOut className="h-5 w-5" />
           Sign Out
         </Button>
-        
-        <Button 
-          variant="outline" 
+
+        <Button
+          variant="outline"
           className="w-full h-12 rounded-xl gap-2 justify-center border-destructive/30 text-destructive hover:bg-destructive/5 hover:text-destructive"
         >
           <Trash2 className="h-5 w-5" />

@@ -41,7 +41,7 @@ const Trends = () => {
   const [activeTimeRange, setActiveTimeRange] = useState("6M");
 
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Trends & Analytics</h1>
@@ -56,11 +56,10 @@ const Trends = () => {
             <Button
               key={tab}
               variant={activeBiomarker === tab ? "default" : "outline"}
-              className={`rounded-full ${
-                activeBiomarker === tab
+              className={`rounded-full ${activeBiomarker === tab
                   ? "bg-primary text-primary-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
               onClick={() => setActiveBiomarker(tab)}
             >
               {tab}
@@ -75,11 +74,10 @@ const Trends = () => {
               key={range}
               variant="ghost"
               size="sm"
-              className={`rounded-full px-4 ${
-                activeTimeRange === range
+              className={`rounded-full px-4 ${activeTimeRange === range
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
               onClick={() => setActiveTimeRange(range)}
             >
               {range}
@@ -114,12 +112,12 @@ const Trends = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={glucoseData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
-                <YAxis 
+                <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   domain={[0, 120]}
@@ -131,15 +129,15 @@ const Trends = () => {
                     borderRadius: "8px",
                   }}
                 />
-                <ReferenceLine 
-                  y={100} 
-                  stroke="hsl(var(--destructive))" 
-                  strokeDasharray="5 5" 
+                <ReferenceLine
+                  y={100}
+                  stroke="hsl(var(--destructive))"
+                  strokeDasharray="5 5"
                   label={{ value: "High", position: "right", fill: "hsl(var(--destructive))", fontSize: 10 }}
                 />
-                <ReferenceLine 
-                  y={70} 
-                  stroke="hsl(var(--destructive))" 
+                <ReferenceLine
+                  y={70}
+                  stroke="hsl(var(--destructive))"
                   strokeDasharray="5 5"
                   label={{ value: "Low", position: "right", fill: "hsl(var(--destructive))", fontSize: 10 }}
                 />
@@ -160,7 +158,7 @@ const Trends = () => {
       {/* Insights */}
       <div>
         <h2 className="text-lg font-semibold text-foreground mb-4">Insights</h2>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {insights.map((insight, index) => (
             <Card key={index} className={`shadow-card border ${insight.color}`}>
               <CardContent className="p-4">

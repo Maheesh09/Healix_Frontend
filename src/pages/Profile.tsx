@@ -18,7 +18,7 @@ const medicalInfo = [
 
 const Profile = () => {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">My Profile</h1>
@@ -80,7 +80,7 @@ const Profile = () => {
               </div>
             ))}
           </div>
-          
+
           <Button variant="outline" className="w-full mt-6 h-11 rounded-xl">
             Update Medical Information
           </Button>

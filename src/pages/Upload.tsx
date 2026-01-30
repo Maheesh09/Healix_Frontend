@@ -24,7 +24,7 @@ const UploadPage = () => {
   };
 
   return (
-    <PageTransition className="p-6 lg:p-8 space-y-6">
+    <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0.8, x: -10 }}
@@ -48,28 +48,27 @@ const UploadPage = () => {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
-                isDragging
+              className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${isDragging
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50"
-              }`}
+                }`}
               whileHover={{ borderColor: "hsl(var(--primary) / 0.5)" }}
             >
-              <motion.div 
+              <motion.div
                 className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center"
                 animate={{ y: [0, -4, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
                 <UploadIcon className="h-8 w-8 text-primary-foreground" />
               </motion.div>
-              
+
               <h3 className="text-xl font-bold text-foreground mb-2">
                 Drag & drop your report
               </h3>
               <p className="text-muted-foreground mb-6">
                 or click to browse from your device
               </p>
-              
+
               <div className="flex justify-center gap-4">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                   <Button variant="outline" className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary">
@@ -106,7 +105,7 @@ const UploadPage = () => {
               {/* Left side - WhatsApp info */}
               <div className="flex-1 p-8 bg-[#25D366]/10">
                 <div className="flex items-center gap-3 mb-4">
-                  <motion.div 
+                  <motion.div
                     className="w-12 h-12 rounded-xl bg-[#25D366] flex items-center justify-center"
                     whileHover={{ scale: 1.05, rotate: 5 }}
                     transition={{ duration: 0.2 }}
@@ -118,11 +117,11 @@ const UploadPage = () => {
                     <p className="text-sm text-muted-foreground">Forward reports directly</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   {["Save Healix number", "Forward your report", "Done! We'll process it"].map((step, index) => (
-                    <motion.div 
-                      key={index} 
+                    <motion.div
+                      key={index}
                       className="flex items-center gap-3"
                       initial={{ opacity: 0.7, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -157,7 +156,7 @@ const UploadPage = () => {
       </motion.div>
 
       {/* Disclaimer */}
-      <motion.p 
+      <motion.p
         className="text-center text-sm text-muted-foreground"
         initial={{ opacity: 0.7 }}
         animate={{ opacity: 1 }}

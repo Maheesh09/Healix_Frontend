@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
-  Search, 
-  Filter, 
-  FileText, 
-  ChevronDown, 
+import {
+  Search,
+  Filter,
+  FileText,
+  ChevronDown,
   ChevronUp,
   Eye,
-  Download 
+  Download
 } from "lucide-react";
 
 // Mock reports data
@@ -77,7 +77,7 @@ const Reports = () => {
   };
 
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Reports</h1>
@@ -95,20 +95,20 @@ const Reports = () => {
             className="pl-10 h-11 rounded-xl border-border bg-card"
           />
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="h-11 rounded-xl border-border gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+          <Button variant="outline" className="h-11 rounded-xl border-border gap-2 whitespace-nowrap">
             <Filter className="h-4 w-4" />
-            Filters:
+            <span className="hidden sm:inline">Filters:</span>
           </Button>
-          <Button variant="outline" className="h-11 rounded-xl border-border gap-2">
+          <Button variant="outline" className="h-11 rounded-xl border-border gap-2 whitespace-nowrap">
             All Types
             <ChevronDown className="h-4 w-4" />
           </Button>
-          <Button variant="outline" className="h-11 rounded-xl border-border gap-2">
+          <Button variant="outline" className="h-11 rounded-xl border-border gap-2 whitespace-nowrap">
             All Years
             <ChevronDown className="h-4 w-4" />
           </Button>
-          <Button variant="outline" className="h-11 rounded-xl border-border gap-2">
+          <Button variant="outline" className="h-11 rounded-xl border-border gap-2 whitespace-nowrap">
             All Systems
             <ChevronDown className="h-4 w-4" />
           </Button>
@@ -125,33 +125,37 @@ const Reports = () => {
                 className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted/30 transition-colors"
                 onClick={() => toggleExpand(report.id)}
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <div className="flex items-center gap-4  max-w-[calc(100%-80px)]">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <FileText className="h-5 w-5 text-primary" />
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">{report.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {report.lab} • {report.date} • {report.system}
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-foreground truncate">{report.name}</h3>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {report.lab} • {report.date}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-shrink-0">
                   {report.values.map((val, idx) => (
                     <span
                       key={idx}
-                      className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary"
+                      className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary hidden xl:inline-block"
                     >
                       {val.name}: {val.value}
                     </span>
                   ))}
                   <span
-                    className={`text-xs px-3 py-1 rounded-full border ${getStatusStyle(
+                    className={`text-xs px-3 py-1 rounded-full border hidden sm:inline-block ${getStatusStyle(
                       report.status
                     )}`}
                   >
                     {report.status}
                   </span>
+                  <span
+                    className={`h-2 w-2 rounded-full sm:hidden ${report.status === "Normal" ? "bg-success" : report.status === "Alert" ? "bg-destructive" : "bg-warning"
+                      }`}
+                  />
                   {expandedReport === report.id ? (
                     <ChevronUp className="h-5 w-5 text-muted-foreground" />
                   ) : (

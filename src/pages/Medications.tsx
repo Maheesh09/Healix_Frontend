@@ -23,21 +23,21 @@ const medications = [
 
 const Medications = () => {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Medications</h1>
           <p className="text-muted-foreground">Track and manage your medications</p>
         </div>
-        <Button className="rounded-xl bg-primary hover:bg-primary/90 gap-2">
+        <Button className="rounded-xl bg-primary hover:bg-primary/90 gap-2 px-3 sm:px-4">
           <Plus className="h-4 w-4" />
-          Add Medication
+          <span className="hidden sm:inline">Add Medication</span>
         </Button>
       </div>
 
       {/* Medications List */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {medications.map((med) => (
           <Card key={med.id} className="shadow-card border-0">
             <CardContent className="p-6">

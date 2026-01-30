@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Users, 
-  FileText, 
-  Shield, 
-  MessageCircle, 
-  Mail, 
+import {
+  Users,
+  FileText,
+  Shield,
+  MessageCircle,
+  Mail,
   Link as LinkIcon,
   Share2,
   Settings,
@@ -57,7 +57,7 @@ const recentShares = [
 
 const CareCircle = () => {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Care Circle</h1>
@@ -65,7 +65,7 @@ const CareCircle = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {summaryCards.map((card, index) => (
           <Card key={index} className="shadow-card border-0">
             <CardContent className="p-4 flex items-center gap-4">
@@ -102,11 +102,10 @@ const CareCircle = () => {
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium text-foreground">{member.name}</h4>
                         <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${
-                            member.access === "Full Access"
+                          className={`text-xs px-2 py-0.5 rounded-full ${member.access === "Full Access"
                               ? "bg-success/10 text-success"
                               : "bg-muted text-muted-foreground"
-                          }`}
+                            }`}
                         >
                           {member.access}
                         </span>
