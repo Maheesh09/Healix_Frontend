@@ -13,8 +13,8 @@ const features = [
   },
   {
     icon: MessageCircle,
-    title: "Upload Reports via WhatsApp",
-    description: "Patients can forward medical reports directly from WhatsApp or Telegram, eliminating the need for scanning, printing, or manual uploads.",
+    title: "Upload Reports via Telegram",
+    description: "Patients can forward medical reports directly from Telegram, eliminating the need for scanning, printing, or manual uploads.",
   },
   {
     icon: Brain,

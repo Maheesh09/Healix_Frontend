@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload as UploadIcon, FileText, Image, ArrowRight, Check, MessageCircle } from "lucide-react";
+import { Upload as UploadIcon, FileText, Image, ArrowRight, Check, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
 
@@ -102,24 +102,24 @@ const UploadPage = () => {
         <Card className="shadow-card border-0 overflow-hidden">
           <CardContent className="p-0">
             <div className="flex flex-col md:flex-row">
-              {/* Left side - WhatsApp info */}
-              <div className="flex-1 p-8 bg-[#25D366]/10">
+              {/* Left side - Telegram info */}
+              <div className="flex-1 p-8 bg-[#229ED9]/10">
                 <div className="flex items-center gap-3 mb-4">
                   <motion.div
-                    className="w-12 h-12 rounded-xl bg-[#25D366] flex items-center justify-center"
+                    className="w-12 h-12 rounded-xl bg-[#229ED9] flex items-center justify-center"
                     whileHover={{ scale: 1.05, rotate: 5 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <MessageCircle className="h-6 w-6 text-white" />
+                    <Send className="h-6 w-6 text-white" />
                   </motion.div>
                   <div>
-                    <h3 className="font-bold text-foreground">WhatsApp Upload</h3>
+                    <h3 className="font-bold text-foreground">Telegram Upload</h3>
                     <p className="text-sm text-muted-foreground">Forward reports directly</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  {["Save Healix number", "Forward your report", "Done! We'll process it"].map((step, index) => (
+                  {["Save Healix contact", "Forward your report", "Done! We'll process it"].map((step, index) => (
                     <motion.div
                       key={index}
                       className="flex items-center gap-3"
@@ -127,7 +127,7 @@ const UploadPage = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
                     >
-                      <div className="w-6 h-6 rounded-full bg-[#25D366] flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-[#229ED9] flex items-center justify-center">
                         <span className="text-xs font-bold text-white">{index + 1}</span>
                       </div>
                       <span className="text-sm text-foreground">{step}</span>
@@ -143,8 +143,8 @@ const UploadPage = () => {
                     <span className="text-muted-foreground text-sm">QR Code</span>
                   </div>
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                    <Button className="rounded-xl bg-[#25D366] hover:bg-[#25D366]/90 gap-2 transition-shadow duration-300 hover:shadow-lg">
-                      Open WhatsApp
+                    <Button className="rounded-xl bg-[#229ED9] hover:bg-[#229ED9]/90 gap-2 transition-shadow duration-300 hover:shadow-lg">
+                      Open Telegram
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </motion.div>

@@ -4,7 +4,7 @@ import {
   Users,
   FileText,
   Shield,
-  MessageCircle,
+  Send,
   Mail,
   Link as LinkIcon,
   Share2,
@@ -22,8 +22,8 @@ const summaryCards = [
 const circleMembers = [
   {
     id: 1,
-    name: "Dr. Sarah Johnson",
-    email: "dr.sarah@hospital.com",
+    name: "Dr. Priyantha Silva",
+    email: "dr.priyantha@hospital.lk",
     access: "Full Access",
     reportsShared: 12,
     lastActive: "2 hours ago",
@@ -31,8 +31,8 @@ const circleMembers = [
   },
   {
     id: 2,
-    name: "Mom",
-    email: "mom@email.com",
+    name: "Amma",
+    email: "amma@gmail.com",
     access: "View Only",
     reportsShared: 5,
     lastActive: "Yesterday",
@@ -40,8 +40,8 @@ const circleMembers = [
   },
   {
     id: 3,
-    name: "Dr. Michael Chen",
-    email: "dr.chen@clinic.com",
+    name: "Dr. Nimal Perera",
+    email: "dr.nimal@clinic.lk",
     access: "Full Access",
     reportsShared: 8,
     lastActive: "3 days ago",
@@ -50,9 +50,9 @@ const circleMembers = [
 ];
 
 const recentShares = [
-  { report: "Blood Test Results", sharedWith: "Dr. Sarah Johnson", time: "Today" },
-  { report: "X-Ray Report", sharedWith: "Mom", time: "Yesterday" },
-  { report: "Annual Checkup", sharedWith: "Dr. Michael Chen", time: "3 days ago" },
+  { report: "Blood Test Results", sharedWith: "Dr. Priyantha Silva", time: "Today" },
+  { report: "X-Ray Report", sharedWith: "Amma", time: "Yesterday" },
+  { report: "Annual Checkup", sharedWith: "Dr. Nimal Perera", time: "3 days ago" },
 ];
 
 const CareCircle = () => {
@@ -139,9 +139,9 @@ const CareCircle = () => {
             </CardHeader>
             <CardContent>
               <div className="flex gap-4">
-                <Button className="flex-1 h-16 flex-col gap-1 rounded-xl bg-success hover:bg-success/90">
-                  <MessageCircle className="h-5 w-5" />
-                  <span className="text-xs">WhatsApp</span>
+                <Button className="flex-1 h-16 flex-col gap-1 rounded-xl bg-[#229ED9] hover:bg-[#229ED9]/90">
+                  <Send className="h-5 w-5" />
+                  <span className="text-xs">Telegram</span>
                 </Button>
                 <Button className="flex-1 h-16 flex-col gap-1 rounded-xl bg-info hover:bg-info/90">
                   <Mail className="h-5 w-5" />

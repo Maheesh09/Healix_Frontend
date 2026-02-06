@@ -13,7 +13,7 @@ import {
   Pill,
   Users,
   User,
-  Settings
+  Settings,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -40,8 +40,6 @@ const bottomItems = [
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
-
-
 const DashboardHeader = () => {
   const location = useLocation();
 
@@ -63,7 +61,10 @@ const DashboardHeader = () => {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[280px] sm:w-[300px] p-0 bg-sidebar border-r border-sidebar-border">
+              <SheetContent
+                side="left"
+                className="w-[280px] sm:w-[300px] p-0 bg-sidebar border-r border-sidebar-border"
+              >
                 <SheetHeader className="p-6 pb-2 text-left">
                   <SheetTitle>
                     <div className="flex items-center gap-2">
@@ -85,12 +86,15 @@ const DashboardHeader = () => {
                           <Link
                             key={item.href}
                             to={item.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
-                              ? "bg-sidebar-accent text-sidebar-primary"
-                              : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                              }`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
+                              isActive
+                                ? "bg-sidebar-accent text-sidebar-primary"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                            }`}
                           >
-                            <item.icon className={`h-5 w-5 ${isActive ? "scale-110" : ""}`} />
+                            <item.icon
+                              className={`h-5 w-5 ${isActive ? "scale-110" : ""}`}
+                            />
                             {item.label}
                           </Link>
                         );
@@ -106,12 +110,15 @@ const DashboardHeader = () => {
                           <Link
                             key={item.href}
                             to={item.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
-                              ? "bg-sidebar-accent text-sidebar-primary"
-                              : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                              }`}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
+                              isActive
+                                ? "bg-sidebar-accent text-sidebar-primary"
+                                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                            }`}
                           >
-                            <item.icon className={`h-5 w-5 ${isActive ? "scale-110" : ""}`} />
+                            <item.icon
+                              className={`h-5 w-5 ${isActive ? "scale-110" : ""}`}
+                            />
                             {item.label}
                           </Link>
                         );
@@ -127,7 +134,8 @@ const DashboardHeader = () => {
 
                     <div className="p-3 rounded-xl bg-muted/50">
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        Healix provides informational insights and does not replace professional medical advice.
+                        Healix provides informational insights and does not
+                        replace professional medical advice.
                       </p>
                     </div>
                   </div>
@@ -136,19 +144,27 @@ const DashboardHeader = () => {
             </Sheet>
           </div>
 
-          <motion.div whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }} transition={{ duration: 0.5 }}>
+          <motion.div
+            whileHover={{ scale: 1.05, rotate: [0, -2, 2, 0] }}
+            transition={{ duration: 0.5 }}
+          >
             <Link to="/dashboard">
               <HealixLogo size="md" className="hidden sm:flex" />
-              <HealixLogo size="sm" className="flex sm:hidden" showText={false} />
+              <HealixLogo
+                size="sm"
+                className="flex sm:hidden"
+                showText={false}
+              />
             </Link>
           </motion.div>
-
-
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-            <Button asChild className="rounded-full bg-primary hover:bg-primary/90 transition-shadow duration-300 hover:shadow-lg h-9 sm:h-10 px-3 sm:px-4">
+            <Button
+              asChild
+              className="rounded-full bg-primary hover:bg-primary/90 transition-shadow duration-300 hover:shadow-lg h-9 sm:h-10 px-3 sm:px-4"
+            >
               <Link to="/upload">
                 <Upload className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Upload</span>
@@ -156,8 +172,16 @@ const DashboardHeader = () => {
             </Button>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="hidden sm:block">
-            <Button variant="outline" asChild className="rounded-full border-primary text-primary hover:bg-primary/5 transition-colors duration-300">
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            className="hidden sm:block"
+          >
+            <Button
+              variant="outline"
+              asChild
+              className="rounded-full border-primary text-primary hover:bg-primary/5 transition-colors duration-300"
+            >
               <Link to="/">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -176,13 +200,17 @@ const DashboardHeader = () => {
           </motion.button>
 
           {/* User avatar */}
-          <motion.div
-            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="text-xs sm:text-sm font-semibold text-primary">M</span>
-          </motion.div>
+          <Link to="/profile">
+            <motion.div
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="text-xs sm:text-sm font-semibold text-primary">
+                S
+              </span>
+            </motion.div>
+          </Link>
         </div>
       </div>
     </motion.header>

@@ -1,28 +1,60 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { User, Mail, Phone, MapPin, Droplet, Calendar, Stethoscope, Heart, Pencil } from "lucide-react";
 
 const personalInfo = [
-  { icon: User, label: "Full Name", value: "Alex Johnson" },
-  { icon: Mail, label: "Email Address", value: "alex.johnson@email.com" },
-  { icon: Phone, label: "Phone Number", value: "+1 (555) 123-4567" },
-  { icon: MapPin, label: "Address", value: "123 Health Street, Medical City, MC 12345" },
+  { icon: User, label: "Full Name", value: "Shageeshan Thamodharam" },
+  { icon: Mail, label: "Email Address", value: "shageejoxtyn@gmail.com" },
+  { icon: Phone, label: "Phone Number", value: "+94771089061" },
+  { icon: MapPin, label: "Address", value: "49/2 Melfort estate, Gemunupura Kothalawala" },
 ];
 
 const medicalInfo = [
   { icon: Droplet, label: "Blood Type", value: "O+", color: "bg-destructive/10" },
   { icon: Calendar, label: "Last Checkup", value: "Nov 15, 2025", color: "bg-primary/10" },
-  { icon: Stethoscope, label: "Primary Care Physician", value: "Dr. Sarah Chen", color: "bg-info/10" },
-  { icon: Heart, label: "Emergency Contact", value: "Jane Johnson", subvalue: "+1 (555) 987-6543", color: "bg-warning/10" },
+  { icon: Stethoscope, label: "Primary Care Physician", value: "Doctor Hitha Hoda", color: "bg-info/10" },
+  { icon: Heart, label: "Emergency Contact", value: "Maheesha", subvalue: "+94763658903", color: "bg-warning/10" },
 ];
 
 const Profile = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [personalData, setPersonalData] = useState(personalInfo);
+  const [medicalData, setMedicalData] = useState(medicalInfo);
+
+  const handlePersonalChange = (index: number, newValue: string) => {
+    const updated = [...personalData];
+    updated[index].value = newValue;
+    setPersonalData(updated);
+  };
+
+  const handleMedicalChange = (index: number, newValue: string) => {
+    const updated = [...medicalData];
+    updated[index].value = newValue;
+    setMedicalData(updated);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    // In a real app, you would save updates to backend here
+    console.log("Saving profile:", { personalData, medicalData });
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">My Profile</h1>
-        <p className="text-muted-foreground">View and manage your personal information</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">My Profile</h1>
+          <p className="text-muted-foreground">View and manage your personal information</p>
+        </div>
+        <Button 
+          onClick={() => setIsEditing(!isEditing)} 
+          variant={isEditing ? "ghost" : "default"}
+        >
+          {isEditing ? "Cancel" : "Edit Profile"}
+        </Button>
       </div>
 
       {/* Personal Information */}
@@ -32,23 +64,33 @@ const Profile = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {personalInfo.map((info, index) => (
+            {personalData.map((info, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between py-3 border-b border-border last:border-0"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <info.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm text-muted-foreground">{info.label}</p>
-                    <p className="font-medium text-foreground">{info.value}</p>
+                    {isEditing ? (
+                      <Input
+                        value={info.value}
+                        onChange={(e) => handlePersonalChange(index, e.target.value)}
+                        className="mt-1 h-8 max-w-md"
+                      />
+                    ) : (
+                      <p className="font-medium text-foreground">{info.value}</p>
+                    )}
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Pencil className="h-4 w-4 text-muted-foreground" />
-                </Button>
+                {!isEditing && (
+                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                    <Pencil className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>
@@ -62,18 +104,26 @@ const Profile = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-4">
-            {medicalInfo.map((info, index) => (
+            {medicalData.map((info, index) => (
               <div
                 key={index}
-                className={`p-4 rounded-xl ${info.color} flex items-center gap-4`}
+                className={`p-4 rounded-xl ${info.color} flex items-center gap-4 transition-all duration-300 hover:shadow-sm`}
               >
-                <div className="w-10 h-10 rounded-xl bg-card flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-card flex items-center justify-center shrink-0">
                   <info.icon className="h-5 w-5 text-foreground" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="text-sm text-muted-foreground">{info.label}</p>
-                  <p className="font-medium text-foreground">{info.value}</p>
-                  {info.subvalue && (
+                  {isEditing ? (
+                    <Input
+                      value={info.value}
+                      onChange={(e) => handleMedicalChange(index, e.target.value)}
+                      className="mt-1 h-8 bg-background/50"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground truncate">{info.value}</p>
+                  )}
+                  {info.subvalue && !isEditing && (
                     <p className="text-sm text-muted-foreground">{info.subvalue}</p>
                   )}
                 </div>
@@ -81,8 +131,12 @@ const Profile = () => {
             ))}
           </div>
 
-          <Button variant="outline" className="w-full mt-6 h-11 rounded-xl">
-            Update Medical Information
+          <Button 
+            className="w-full mt-6 h-11 rounded-xl"
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+            variant={isEditing ? "default" : "outline"}
+          >
+            {isEditing ? "Save Changes" : "Update Medical Information"}
           </Button>
         </CardContent>
       </Card>

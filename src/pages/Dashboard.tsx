@@ -47,7 +47,7 @@ const recentActivity = [
   {
     icon: Upload,
     title: "Blood Test Results uploaded",
-    subtitle: "Complete Blood Count from City Lab",
+    subtitle: "Complete Blood Count from Asiri Lab",
     time: "2 hours ago"
   },
   {
@@ -127,7 +127,7 @@ const Dashboard = () => {
         transition={{ duration: 0.3 }}
       >
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-          Welcome back, M
+          Welcome back, Shagee
         </h1>
         <p className="text-muted-foreground">
           Here's an overview of your health profile

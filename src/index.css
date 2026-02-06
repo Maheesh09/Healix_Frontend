@@ -1,8 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   html {
@@ -73,9 +73,22 @@
     --sidebar-ring: 168 76% 42%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(168 76% 42%) 0%, hsl(199 89% 48%) 50%, hsl(168 76% 52%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(165 55% 97%) 0%, hsl(0 0% 100%) 100%);
-    --gradient-cta: linear-gradient(135deg, hsl(168 76% 42%) 0%, hsl(165 70% 48%) 100%);
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(168 76% 42%) 0%,
+      hsl(199 89% 48%) 50%,
+      hsl(168 76% 52%) 100%
+    );
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(165 55% 97%) 0%,
+      hsl(0 0% 100%) 100%
+    );
+    --gradient-cta: linear-gradient(
+      135deg,
+      hsl(168 76% 42%) 0%,
+      hsl(165 70% 48%) 100%
+    );
   }
 
   .dark {
@@ -125,11 +138,19 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     background-image:
       radial-gradient(at 0% 0%, hsla(168, 76%, 42%, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(199, 89%, 48%, 0.03) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(165, 55%, 95%, 0.1) 0px, transparent 50%);
+      radial-gradient(
+        at 100% 0%,
+        hsla(199, 89%, 48%, 0.03) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 100% 100%,
+        hsla(165, 55%, 95%, 0.1) 0px,
+        transparent 50%
+      );
     background-attachment: fixed;
   }
 
@@ -168,24 +189,36 @@
 }
 
 @layer components {
-
   /* Card shadows */
   .card-shadow {
-    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 4px 16px -4px rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 2px 8px -2px rgba(0, 0, 0, 0.05),
+      0 4px 16px -4px rgba(0, 0, 0, 0.08);
   }
 
   .card-shadow-lg {
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      0 4px 12px -2px rgba(0, 0, 0, 0.08),
+      0 8px 24px -4px rgba(0, 0, 0, 0.1);
   }
 
   /* Hero gradient background */
   .hero-gradient {
-    background: linear-gradient(135deg, hsl(168 76% 42%) 0%, hsl(199 89% 48%) 50%, hsl(168 76% 52%) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(168 76% 42%) 0%,
+      hsl(199 89% 48%) 50%,
+      hsl(168 76% 52%) 100%
+    );
   }
 
   /* Subtle background for dashboard */
   .dashboard-bg {
-    background: linear-gradient(180deg, hsl(165 45% 96%) 0%, hsl(165 35% 98%) 100%);
+    background: linear-gradient(
+      180deg,
+      hsl(165 45% 96%) 0%,
+      hsl(165 35% 98%) 100%
+    );
   }
 
   /* Status badges */
@@ -211,9 +244,9 @@
     @apply bg-sidebar-accent text-sidebar-primary font-medium;
   }
 
-  /* WhatsApp brand color */
-  .whatsapp-green {
-    background-color: #25D366;
+  /* Telegram brand color */
+  .telegram-blue {
+    background-color: #229ed9;
   }
 
   /* Smooth transitions - base for all interactive elements */
@@ -274,7 +307,7 @@
   }
 
   .link-hover::after {
-    content: '';
+    content: "";
     @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ease-out;
   }
 
@@ -302,7 +335,6 @@
 }
 
 @layer utilities {
-
   /* Health score circle animation */
   @keyframes health-score-fill {
     from {
@@ -315,32 +347,32 @@
   }
 
   /* Stagger children animation - uses tailwind animations */
-  .stagger-children>* {
+  .stagger-children > * {
     opacity: 0;
     animation: fade-in 0.5s ease-out forwards;
   }
 
-  .stagger-children>*:nth-child(1) {
+  .stagger-children > *:nth-child(1) {
     animation-delay: 0ms;
   }
 
-  .stagger-children>*:nth-child(2) {
+  .stagger-children > *:nth-child(2) {
     animation-delay: 75ms;
   }
 
-  .stagger-children>*:nth-child(3) {
+  .stagger-children > *:nth-child(3) {
     animation-delay: 150ms;
   }
 
-  .stagger-children>*:nth-child(4) {
+  .stagger-children > *:nth-child(4) {
     animation-delay: 225ms;
   }
 
-  .stagger-children>*:nth-child(5) {
+  .stagger-children > *:nth-child(5) {
     animation-delay: 300ms;
   }
 
-  .stagger-children>*:nth-child(6) {
+  .stagger-children > *:nth-child(6) {
     animation-delay: 375ms;
   }
 
