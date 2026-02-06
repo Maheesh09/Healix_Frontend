@@ -86,11 +86,6 @@ const Profile = () => {
                     )}
                   </div>
                 </div>
-                {!isEditing && (
-                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                    <Pencil className="h-4 w-4 text-muted-foreground" />
-                  </Button>
-                )}
               </div>
             ))}
           </div>
