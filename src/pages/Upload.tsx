@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload as UploadIcon, FileText, Image, ArrowRight, Check, Send } from "lucide-react";
-import { motion } from "framer-motion";
+import { Upload as UploadIcon, FileText, Image, ArrowRight, Check, Send, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
 
 const UploadPage = () => {
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -20,7 +22,29 @@ const UploadPage = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    // Handle file drop
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      setSelectedFile(file);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -43,46 +67,109 @@ const UploadPage = () => {
       >
         <Card className="shadow-card border-0">
           <CardContent className="p-8">
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className="hidden"
+              accept=".pdf,.jpg,.jpeg,.png,.heic"
+            />
+            
             {/* Drag and Drop Zone */}
             <motion.div
+              onClick={handleClick}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${isDragging
+              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${isDragging
                   ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
+                  : "border-border hover:border-primary/50 hover:bg-muted/30"
                 }`}
               whileHover={{ borderColor: "hsl(var(--primary) / 0.5)" }}
             >
-              <motion.div
-                className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center"
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <UploadIcon className="h-8 w-8 text-primary-foreground" />
-              </motion.div>
+              <AnimatePresence mode="wait">
+                {selectedFile ? (
+                  <motion.div
+                    key="file-selected"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 relative group">
+                      <FileText className="h-8 w-8 text-primary" />
+                      <button 
+                        onClick={removeFile}
+                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-1">
+                      {selectedFile.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="outline" 
+                        onClick={(e) => { e.stopPropagation(); handleClick(); }}
+                      >
+                        Change File
+                      </Button>
+                      <Button onClick={(e) => e.stopPropagation()}>
+                        Upload Report
+                      </Button>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="upload-prompt"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <motion.div
+                      className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center"
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <UploadIcon className="h-8 w-8 text-primary-foreground" />
+                    </motion.div>
 
-              <h3 className="text-xl font-bold text-foreground mb-2">
-                Drag & drop your report
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                or click to browse from your device
-              </p>
+                    <h3 className="text-xl font-bold text-foreground mb-2">
+                      Drag & drop your report
+                    </h3>
+                    <p className="text-muted-foreground mb-6">
+                      or click to browse from your device
+                    </p>
 
-              <div className="flex justify-center gap-4">
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                  <Button variant="outline" className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary">
-                    <FileText className="h-4 w-4" />
-                    PDF
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                  <Button variant="outline" className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary">
-                    <Image className="h-4 w-4" />
-                    Image
-                  </Button>
-                </motion.div>
-              </div>
+                    <div className="flex justify-center gap-4">
+                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary"
+                          onClick={(e) => { e.stopPropagation(); handleClick(); }}
+                        >
+                          <FileText className="h-4 w-4" />
+                          PDF
+                        </Button>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                        <Button 
+                          variant="outline" 
+                          className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary"
+                          onClick={(e) => { e.stopPropagation(); handleClick(); }}
+                        >
+                          <Image className="h-4 w-4" />
+                          Image
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             {/* Supported formats */}
