@@ -48,6 +48,8 @@ const Login = () => {
           description: result.message || "Login successful",
         });
         navigate("/dashboard");
+        localStorage.setItem("NIC", JSON.stringify(result.data.nic));
+        console.log("NIC stored in localStorage:", result.data.nic);
       } else {
         toast({
           title: "Login Failed",

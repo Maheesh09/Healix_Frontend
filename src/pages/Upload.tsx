@@ -1,10 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload as UploadIcon, FileText, Image, ArrowRight, Check, Send, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
-
 const UploadPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -46,6 +45,39 @@ const UploadPage = () => {
       fileInputRef.current.value = '';
     }
   };
+
+const handleUpload = async () => {
+  var NIC = localStorage.getItem("NIC");
+  if (NIC) {
+     NIC = NIC.replace(/^"|"$/g, ""); // removes starting and ending quotes
+  }
+  if (!selectedFile) return;
+  try {
+    const formData = new FormData();
+    formData.append("file", selectedFile); // KEY MUST BE "file"
+
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/v1/ocr/upload?nic=${NIC}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.detail || "Upload failed");
+    }
+
+    const data = await response.json();
+    console.log("Upload success:", data);
+
+    alert("Report uploaded successfully!");
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("Upload failed. Check console.");
+  }
+};  
 
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -118,9 +150,14 @@ const UploadPage = () => {
                       >
                         Change File
                       </Button>
-                      <Button onClick={(e) => e.stopPropagation()}>
-                        Upload Report
-                      </Button>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUpload();
+                      }}
+                    >
+                      Upload Report
+                    </Button>
                     </div>
                   </motion.div>
                 ) : (
