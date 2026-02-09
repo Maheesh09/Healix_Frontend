@@ -21,8 +21,11 @@ const Reports = () => {
 
   useEffect(() => {
     const fetchReports = async () => {
-      let nic = localStorage.getItem("NIC");
-      if (nic) nic = nic.replace(/^"|"$/g, "");
+      var nic = localStorage.getItem("NIC");
+      if (nic) {
+        nic = nic.replace(/^"|"$/g, ""); // removes starting and ending quotes
+      }      
+        console.log("NIC stored in localStorage:", nic);
 
       if (!nic) {
         setError("NIC not found. Please log in again.");
@@ -31,50 +34,35 @@ const Reports = () => {
       }
 
       try {
-        // 1️⃣ Fetch reports list
-        const res = await fetch(
+        const response = await fetch(
           `http://127.0.0.1:8000/api/v1/ocr/reports/nic/${nic}`
         );
 
-        if (!res.ok) throw new Error("Failed to fetch reports list");
+        if (!response.ok) {
+          throw new Error("Failed to fetch reports");
+        }
 
-        const listData = await res.json();
+        const data = await response.json();
 
-        // 2️⃣ Fetch normalized reports in parallel
-        const detailedReports = await Promise.all(
-          listData.reports.map(async (report, index) => {
-            const detailRes = await fetch(
-              `http://127.0.0.1:8000/api/v1/ocr/report/${nic}/${report.file_id}/normalized`
-            );
+        const mappedReports = data.reports.map((report, index) => ({
+          id: index + 1,
+          name: "Medical Report",
+          lab: data.source === "storage" ? "Cloud Storage" : "Hospital Database",
+          date: new Date(report.created).toLocaleDateString(),
+          values: [
+            { name: "File Type", value: report.type },
+            {
+              name: "Size",
+              value: `${(report.size_bytes / 1024).toFixed(1)} KB`,
+            },
+          ],
+          status: "Normal",
+          aiSummary:
+            "This report has been processed and stored successfully. Detailed medical values can be viewed in the full report.",
+          fileId: report.file_id,
+        }));
 
-            if (!detailRes.ok) return null;
-
-            const detailData = await detailRes.json();
-
-            return {
-              id: index + 1,
-              name: detailData.data.report.type,
-              lab:
-                listData.source === "storage"
-                  ? "Cloud Storage"
-                  : "Hospital Database",
-              date: new Date(report.created).toLocaleDateString(),
-              values: [
-                { name: "File Type", value: report.type },
-                {
-                  name: "Size",
-                  value: `${(report.size_bytes / 1024).toFixed(1)} KB`,
-                },
-              ],
-              status: "Normal",
-              aiSummary: `Report for ${detailData.data.patient.name}, Age ${detailData.data.patient.age_years}.`,
-              fileId: report.file_id,
-              biomarkers: detailData.data.biomarkers,
-            };
-          })
-        );
-
-        setReports(detailedReports.filter(Boolean));
+        setReports(mappedReports);
       } catch (err) {
         console.error(err);
         setError("Unable to load reports");
@@ -166,11 +154,7 @@ const Reports = () => {
                     >
                       {report.status}
                     </span>
-                    {expandedReport === report.id ? (
-                      <ChevronUp />
-                    ) : (
-                      <ChevronDown />
-                    )}
+                    {expandedReport === report.id ? <ChevronUp /> : <ChevronDown />}
                   </div>
                 </div>
 
