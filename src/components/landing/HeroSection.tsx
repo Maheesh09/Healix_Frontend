@@ -105,7 +105,7 @@ const HeroSection = () => {
               <img
                 src={heroIllustration}
                 alt="Healthcare professional"
-                className="h-[400px] lg:h-[500px] w-auto object-contain drop-shadow-2xl"
+                className="h-[300px] lg:h-[450px] w-auto object-contain drop-shadow-2xl"
               />
             </motion.div>
           </motion.div>

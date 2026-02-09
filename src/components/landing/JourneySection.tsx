@@ -15,7 +15,7 @@ const JourneySection = () => {
             transition={{ duration: 0.4 }}
           >
             Your Health Journey,{" "}
-            <span className="text-healix-coral">Simplified</span>
+            <span className="text-primary">Simplified</span>
           </motion.h2>
 
           <motion.p
