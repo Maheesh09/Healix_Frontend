@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/motion/MotionWrappers";
 const UploadPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -49,19 +50,18 @@ const UploadPage = () => {
 const handleUpload = async () => {
   var NIC = localStorage.getItem("NIC");
   if (NIC) {
-     NIC = NIC.replace(/^"|"$/g, ""); // removes starting and ending quotes
+    NIC = NIC.replace(/^"|"$/g, ""); // removes quotes
   }
   if (!selectedFile) return;
+
+  setLoading(true); // start loading
   try {
     const formData = new FormData();
-    formData.append("file", selectedFile); // KEY MUST BE "file"
+    formData.append("file", selectedFile);
 
     const response = await fetch(
       `http://127.0.0.1:8000/api/v1/ocr/upload?nic=${NIC}`,
-      {
-        method: "POST",
-        body: formData,
-      }
+      { method: "POST", body: formData }
     );
 
     if (!response.ok) {
@@ -73,11 +73,14 @@ const handleUpload = async () => {
     console.log("Upload success:", data);
 
     alert("Report uploaded successfully!");
+    setSelectedFile(null); // reset file after success
   } catch (error) {
     console.error("Upload error:", error);
     alert("Upload failed. Check console.");
+  } finally {
+    setLoading(false); // stop loading
   }
-};  
+}; 
 
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
