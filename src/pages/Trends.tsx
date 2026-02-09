@@ -1,22 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, TrendingDown, AlertCircle } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 
-// Mock glucose data
-const glucoseData = [
-  { month: "Jul", value: 105 },
-  { month: "Aug", value: 102 },
-  { month: "Sep", value: 98 },
-  { month: "Oct", value: 96 },
-  { month: "Nov", value: 95 },
-  { month: "Dec", value: 98 },
-];
-
-const biomarkerTabs = ["Glucose", "Cholesterol", "Blood Pressure"];
+// Tabs
+const biomarkerTabs = ["Cholesterol"];
 const timeRanges = ["3M", "6M", "1Y"];
 
+// Insights (static for MVP)
 const insights = [
   {
     icon: AlertCircle,
@@ -36,9 +37,87 @@ const insights = [
   },
 ];
 
+// -----------------------
+// FRONTEND TREND HELPER
+// -----------------------
+function calculateTrend(data) {
+  if (!data || data.length === 0) return "NO_DATA";
+  if (data.length === 1) return "BASELINE";
+
+  const latest = data[0].value;
+  const previous = data[1].value;
+
+  if (latest > previous) return "UP";
+  if (latest < previous) return "DOWN";
+  return "STABLE";
+}
+
+// -----------------------
+// MAIN COMPONENT
+// -----------------------
 const Trends = () => {
-  const [activeBiomarker, setActiveBiomarker] = useState("Glucose");
+  const [activeBiomarker, setActiveBiomarker] = useState("Cholesterol");
   const [activeTimeRange, setActiveTimeRange] = useState("6M");
+  const [chartData, setChartData] = useState([]);
+  const [trend, setTrend] = useState("BASELINE");
+  const [currentValue, setCurrentValue] = useState(null);
+
+  useEffect(() => {
+    async function loadBiomarkerTrend() {
+      try {
+        const nic = "623370194V"; // replace with dynamic NIC if needed
+
+        // 1️⃣ fetch report list
+        const listRes = await fetch(`http://127.0.0.1:8000/api/v1/ocr/reports/nic/${nic}`);
+        const listJson = await listRes.json();
+
+        // 2️⃣ fetch each report
+        const reports = await Promise.all(
+          listJson.reports.map(async (r) => {
+            const res = await fetch(
+              `http://127.0.0.1:8000/api/v1/ocr/report/${nic}/${r.file_id}/normalized`
+            );
+            return res.json();
+          })
+        );
+
+        // 3️⃣ extract the biomarker data (e.g., Total Cholesterol)
+        const extracted = reports
+          .filter(r => r?.data?.report?.sample_collected_at)
+          .map(r => {
+            const biomarker = r.data.biomarkers.find(
+              b => b.name === "Total Cholesterol"
+            );
+            if (!biomarker) return null;
+            return {
+              date: r.data.report.sample_collected_at,
+              value: biomarker.value,
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // 4️⃣ normalize for chart
+setChartData(
+  [
+    { month: "Start", value: 180 }, // start from zero
+    ...extracted.map(e => ({
+      month: new Date(e.date).toLocaleString("default", { month: "short" }),
+      value: e.value,
+    })),
+  ]
+);
+
+        // 5️⃣ set current value and trend
+        setCurrentValue(extracted[0]?.value ?? null);
+        setTrend(calculateTrend(extracted));
+      } catch (err) {
+        console.error("Error fetching trend data:", err);
+      }
+    }
+
+    loadBiomarkerTrend();
+  }, []);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -48,36 +127,35 @@ const Trends = () => {
         <p className="text-muted-foreground">Track how your biomarkers change over time</p>
       </div>
 
-      {/* Biomarker and Time Range Tabs */}
+      {/* Biomarker & Time Range Tabs */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
-        {/* Biomarker tabs */}
         <div className="flex gap-2">
-          {biomarkerTabs.map((tab) => (
+          {biomarkerTabs.map(tab => (
             <Button
               key={tab}
               variant={activeBiomarker === tab ? "default" : "outline"}
-              className={`rounded-full ${activeBiomarker === tab
+              className={`rounded-full ${
+                activeBiomarker === tab
                   ? "bg-primary text-primary-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"
-                }`}
+              }`}
               onClick={() => setActiveBiomarker(tab)}
             >
               {tab}
             </Button>
           ))}
         </div>
-
-        {/* Time range tabs */}
         <div className="flex gap-1 bg-muted rounded-full p-1">
-          {timeRanges.map((range) => (
+          {timeRanges.map(range => (
             <Button
               key={range}
               variant="ghost"
               size="sm"
-              className={`rounded-full px-4 ${activeTimeRange === range
+              className={`rounded-full px-4 ${
+                activeTimeRange === range
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
-                }`}
+              }`}
               onClick={() => setActiveTimeRange(range)}
             >
               {range}
@@ -97,11 +175,16 @@ const Trends = () => {
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Current</p>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-foreground">98</span>
+                <span className="text-2xl font-bold text-foreground">
+                  {currentValue ?? "--"}
+                </span>
                 <span className="text-sm text-muted-foreground">mg/dL</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-success/10 text-success flex items-center gap-1">
-                  <TrendingDown className="h-3 w-3" />
-                  6.7%
+                <span className="text-xs px-2 py-0.5 rounded-full bg-muted flex items-center gap-1">
+                  {trend === "UP" && "⬆️"}
+                  {trend === "DOWN" && "⬇️"}
+                  {trend === "STABLE" && "➡️"}
+                  {trend === "BASELINE" && "●"}
+                  {trend}
                 </span>
               </div>
             </div>
@@ -110,7 +193,7 @@ const Trends = () => {
         <CardContent>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={glucoseData}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="month"
@@ -120,7 +203,7 @@ const Trends = () => {
                 <YAxis
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
-                  domain={[0, 120]}
+                  domain={["auto", "auto"]}
                 />
                 <Tooltip
                   contentStyle={{
@@ -128,18 +211,6 @@ const Trends = () => {
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "8px",
                   }}
-                />
-                <ReferenceLine
-                  y={100}
-                  stroke="hsl(var(--destructive))"
-                  strokeDasharray="5 5"
-                  label={{ value: "High", position: "right", fill: "hsl(var(--destructive))", fontSize: 10 }}
-                />
-                <ReferenceLine
-                  y={70}
-                  stroke="hsl(var(--destructive))"
-                  strokeDasharray="5 5"
-                  label={{ value: "Low", position: "right", fill: "hsl(var(--destructive))", fontSize: 10 }}
                 />
                 <Line
                   type="monotone"
