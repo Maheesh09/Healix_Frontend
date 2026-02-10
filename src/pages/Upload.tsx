@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload as UploadIcon, FileText, Image, ArrowRight, Check, Send, X } from "lucide-react";
+import {
+  Upload as UploadIcon,
+  FileText,
+  Image,
+  ArrowRight,
+  Check,
+  Send,
+  X,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
 const UploadPage = () => {
@@ -22,7 +30,7 @@ const UploadPage = () => {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       setSelectedFile(file);
@@ -43,7 +51,7 @@ const UploadPage = () => {
     e.stopPropagation();
     setSelectedFile(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -90,8 +98,12 @@ const handleUpload = async () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Upload Report</h1>
-        <p className="text-muted-foreground">Add new medical reports to your health profile</p>
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+          Upload Report
+        </h1>
+        <p className="text-muted-foreground">
+          Add new medical reports to your health profile
+        </p>
       </motion.div>
 
       {/* Upload Area */}
@@ -102,24 +114,25 @@ const handleUpload = async () => {
       >
         <Card className="shadow-card border-0">
           <CardContent className="p-8">
-            <input 
-              type="file" 
+            <input
+              type="file"
               ref={fileInputRef}
               onChange={handleFileSelect}
               className="hidden"
               accept=".pdf,.jpg,.jpeg,.png,.heic"
             />
-            
+
             {/* Drag and Drop Zone */}
             <motion.div
               onClick={handleClick}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${isDragging
+              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${
+                isDragging
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50 hover:bg-muted/30"
-                }`}
+              }`}
               whileHover={{ borderColor: "hsl(var(--primary) / 0.5)" }}
             >
               <AnimatePresence mode="wait">
@@ -133,7 +146,7 @@ const handleUpload = async () => {
                   >
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 relative group">
                       <FileText className="h-8 w-8 text-primary" />
-                      <button 
+                      <button
                         onClick={removeFile}
                         className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
@@ -147,9 +160,12 @@ const handleUpload = async () => {
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                     <div className="flex gap-3">
-                      <Button 
-                        variant="outline" 
-                        onClick={(e) => { e.stopPropagation(); handleClick(); }}
+                      <Button
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleClick();
+                        }}
                       >
                         Change File
                       </Button>
@@ -173,7 +189,11 @@ const handleUpload = async () => {
                     <motion.div
                       className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-4 flex items-center justify-center"
                       animate={{ y: [0, -4, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                     >
                       <UploadIcon className="h-8 w-8 text-primary-foreground" />
                     </motion.div>
@@ -186,21 +206,33 @@ const handleUpload = async () => {
                     </p>
 
                     <div className="flex justify-center gap-4">
-                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                        <Button 
-                          variant="outline" 
+                      <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant="outline"
                           className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary"
-                          onClick={(e) => { e.stopPropagation(); handleClick(); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleClick();
+                          }}
                         >
                           <FileText className="h-4 w-4" />
                           PDF
                         </Button>
                       </motion.div>
-                      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                        <Button 
-                          variant="outline" 
+                      <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant="outline"
                           className="rounded-xl gap-2 transition-colors duration-300 hover:border-primary"
-                          onClick={(e) => { e.stopPropagation(); handleClick(); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleClick();
+                          }}
                         >
                           <Image className="h-4 w-4" />
                           Image
@@ -240,13 +272,21 @@ const handleUpload = async () => {
                     <Send className="h-6 w-6 text-white" />
                   </motion.div>
                   <div>
-                    <h3 className="font-bold text-foreground">Telegram Upload</h3>
-                    <p className="text-sm text-muted-foreground">Forward reports directly</p>
+                    <h3 className="font-bold text-foreground">
+                      Telegram Upload
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Forward reports directly
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  {["Save Healix contact", "Forward your report", "Done! We'll process it"].map((step, index) => (
+                  {[
+                    "Open Healix Bot",
+                    "Forward your documents",
+                    "Done! We'll process it",
+                  ].map((step, index) => (
                     <motion.div
                       key={index}
                       className="flex items-center gap-3"
@@ -255,7 +295,9 @@ const handleUpload = async () => {
                       transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
                     >
                       <div className="w-6 h-6 rounded-full bg-[#229ED9] flex items-center justify-center">
-                        <span className="text-xs font-bold text-white">{index + 1}</span>
+                        <span className="text-xs font-bold text-white">
+                          {index + 1}
+                        </span>
                       </div>
                       <span className="text-sm text-foreground">{step}</span>
                     </motion.div>
@@ -266,12 +308,24 @@ const handleUpload = async () => {
               {/* Right side - QR/Action */}
               <div className="flex-1 p-8 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-32 h-32 bg-muted rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-muted-foreground text-sm">QR Code</span>
+                  <div className="w-48 h-48 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center p-2 shadow-sm">
+                    <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://t.me/healixlk_bot"
+                      alt="Healix Bot QR Code"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                    <Button className="rounded-xl bg-[#229ED9] hover:bg-[#229ED9]/90 gap-2 transition-shadow duration-300 hover:shadow-lg">
-                      Open Telegram
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button
+                      className="rounded-xl bg-[#229ED9] hover:bg-[#229ED9]/90 gap-2 transition-shadow duration-300 hover:shadow-lg"
+                      onClick={() =>
+                        window.open("https://t.me/healixlk_bot", "_blank")
+                      }
+                    >
+                      Open @healixlk_bot
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </motion.div>
@@ -289,7 +343,8 @@ const handleUpload = async () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-        🔒 Your data is encrypted and securely stored. Healix provides informational insights only.
+        🔒 Your data is encrypted and securely stored. Healix provides
+        informational insights only.
       </motion.p>
     </PageTransition>
   );
