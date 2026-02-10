@@ -33,7 +33,7 @@ const Reports = () => {
       try {
         // 1️⃣ Fetch reports list
         const res = await fetch(
-          `http://127.0.0.1:8000/api/v1/ocr/reports/nic/${nic}`
+          `http://127.0.0.1:8080/api/v1/ocr/reports/nic/${nic}`
         );
 
         if (!res.ok) throw new Error("Failed to fetch reports list");
@@ -44,7 +44,7 @@ const Reports = () => {
         const detailedReports = await Promise.all(
           listData.reports.map(async (report, index) => {
             const detailRes = await fetch(
-              `http://127.0.0.1:8000/api/v1/ocr/report/${nic}/${report.file_id}/normalized`
+              `http://127.0.0.1:8080/api/v1/ocr/report/${nic}/${report.file_id}/normalized`
             );
 
             if (!detailRes.ok) return null;
