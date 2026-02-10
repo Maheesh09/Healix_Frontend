@@ -9,13 +9,21 @@ import {
   Check,
   Send,
   X,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
+
+type UploadStatus = "idle" | "uploading" | "success" | "error";
+
 const UploadPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("idle");
+  const [uploadMessage, setUploadMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -55,40 +63,55 @@ const UploadPage = () => {
     }
   };
 
-const handleUpload = async () => {
-  var NIC = localStorage.getItem("NIC");
-  if (NIC) {
-    NIC = NIC.replace(/^"|"$/g, ""); // removes quotes
-  }
-  if (!selectedFile) return;
-
-  setLoading(true); // start loading
-  try {
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    const response = await fetch(
-      `http://127.0.0.1:8000/api/v1/ocr/upload?nic=${NIC}`,
-      { method: "POST", body: formData }
-    );
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.detail || "Upload failed");
+  const handleUpload = async () => {
+    var NIC = localStorage.getItem("NIC");
+    if (NIC) {
+      NIC = NIC.replace(/^"|"$/g, ""); // removes quotes
     }
+    if (!selectedFile) return;
 
-    const data = await response.json();
-    console.log("Upload success:", data);
+    setLoading(true); // start loading
+    setUploadStatus("uploading");
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
 
-    alert("Report uploaded successfully!");
-    setSelectedFile(null); // reset file after success
-  } catch (error) {
-    console.error("Upload error:", error);
-    alert("Upload failed. Check console.");
-  } finally {
-    setLoading(false); // stop loading
-  }
-}; 
+      const response = await fetch(
+        `http://127.0.0.1:8080/api/v1/ocr/upload?nic=${NIC}`,
+        { method: "POST", body: formData }
+      );
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.detail || "Upload failed");
+      }
+
+      const data = await response.json();
+      console.log("Upload success:", data);
+
+      setUploadStatus("success");
+      setUploadMessage("Report uploaded successfully!");
+      setSelectedFile(null); // reset file after success
+
+      // Auto-reset after 3 seconds
+      setTimeout(() => {
+        setUploadStatus("idle");
+        setUploadMessage("");
+      }, 3000);
+    } catch (error) {
+      console.error("Upload error:", error);
+      setUploadStatus("error");
+      setUploadMessage("Upload failed. Please try again.");
+
+      // Auto-reset after 3 seconds
+      setTimeout(() => {
+        setUploadStatus("idle");
+        setUploadMessage("");
+      }, 3000);
+    } finally {
+      setLoading(false); // stop loading
+    }
+  };
 
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -105,6 +128,76 @@ const handleUpload = async () => {
           Add new medical reports to your health profile
         </p>
       </motion.div>
+
+      {/* Upload Status Indicator */}
+      <AnimatePresence>
+        {uploadStatus !== "idle" && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card
+              className={`shadow-card border-0 ${uploadStatus === "uploading"
+                ? "bg-primary/5 border-primary/20"
+                : uploadStatus === "success"
+                  ? "bg-green-500/5 border-green-500/20"
+                  : "bg-red-500/5 border-red-500/20"
+                } border-2`}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center gap-3">
+                  {uploadStatus === "uploading" && (
+                    <>
+                      <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                      <p className="text-base font-medium text-primary">
+                        Uploading your report...
+                      </p>
+                    </>
+                  )}
+                  {uploadStatus === "success" && (
+                    <>
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 200,
+                          damping: 10,
+                        }}
+                      >
+                        <CheckCircle2 className="h-6 w-6 text-green-600" />
+                      </motion.div>
+                      <p className="text-base font-medium text-green-600">
+                        {uploadMessage}
+                      </p>
+                    </>
+                  )}
+                  {uploadStatus === "error" && (
+                    <>
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 200,
+                          damping: 10,
+                        }}
+                      >
+                        <AlertCircle className="h-6 w-6 text-red-600" />
+                      </motion.div>
+                      <p className="text-base font-medium text-red-600">
+                        {uploadMessage}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Upload Area */}
       <motion.div
@@ -128,11 +221,10 @@ const handleUpload = async () => {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
-              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${
-                isDragging
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50 hover:bg-muted/30"
-              }`}
+              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer ${isDragging
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50 hover:bg-muted/30"
+                }`}
               whileHover={{ borderColor: "hsl(var(--primary) / 0.5)" }}
             >
               <AnimatePresence mode="wait">
@@ -148,7 +240,8 @@ const handleUpload = async () => {
                       <FileText className="h-8 w-8 text-primary" />
                       <button
                         onClick={removeFile}
-                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={loading}
+                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -162,6 +255,7 @@ const handleUpload = async () => {
                     <div className="flex gap-3">
                       <Button
                         variant="outline"
+                        disabled={loading}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleClick();
@@ -169,14 +263,23 @@ const handleUpload = async () => {
                       >
                         Change File
                       </Button>
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUpload();
-                      }}
-                    >
-                      Upload Report
-                    </Button>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpload();
+                        }}
+                        disabled={loading}
+                        className="min-w-[140px]"
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Uploading...
+                          </>
+                        ) : (
+                          "Upload Report"
+                        )}
+                      </Button>
                     </div>
                   </motion.div>
                 ) : (
@@ -343,7 +446,7 @@ const handleUpload = async () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.4 }}
       >
-        🔒 Your data is encrypted and securely stored. Healix provides
+        Your data is encrypted and securely stored. Healix provides
         informational insights only.
       </motion.p>
     </PageTransition>

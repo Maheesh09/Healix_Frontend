@@ -6,6 +6,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: (patient: Patient) => void;
     logout: () => void;
+    updatePatient: (patient: Patient) => void;
     isLoading: boolean;
 }
 
@@ -40,10 +41,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const updatePatient = (patientData: Patient) => {
+        setPatient(patientData);
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(patientData));
+        } catch (error) {
+            console.error('Failed to update patient in storage:', error);
+        }
+    };
+
     const logout = () => {
         setPatient(null);
         try {
             localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem('NIC'); // Also remove NIC if stored
         } catch (error) {
             console.error('Failed to remove patient from storage:', error);
         }
@@ -56,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isAuthenticated: !!patient,
                 login,
                 logout,
+                updatePatient,
                 isLoading,
             }}
         >
@@ -71,3 +83,4 @@ export function useAuth() {
     }
     return context;
 }
+

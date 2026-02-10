@@ -73,62 +73,74 @@
     --sidebar-ring: 168 76% 42%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(
-      135deg,
-      hsl(168 76% 42%) 0%,
-      hsl(199 89% 48%) 50%,
-      hsl(168 76% 52%) 100%
-    );
-    --gradient-card: linear-gradient(
-      180deg,
-      hsl(165 55% 97%) 0%,
-      hsl(0 0% 100%) 100%
-    );
-    --gradient-cta: linear-gradient(
-      135deg,
-      hsl(168 76% 42%) 0%,
-      hsl(165 70% 48%) 100%
-    );
+    --gradient-hero: linear-gradient(135deg,
+        hsl(168 76% 42%) 0%,
+        hsl(199 89% 48%) 50%,
+        hsl(168 76% 52%) 100%);
+    --gradient-card: linear-gradient(180deg,
+        hsl(165 55% 97%) 0%,
+        hsl(0 0% 100%) 100%);
+    --gradient-cta: linear-gradient(135deg,
+        hsl(168 76% 42%) 0%,
+        hsl(165 70% 48%) 100%);
   }
 
   .dark {
-    --background: 210 20% 10%;
-    --foreground: 150 20% 95%;
+    /* Deep navy base with subtle blue tint for better aesthetics */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
 
-    --card: 210 20% 14%;
-    --card-foreground: 150 20% 95%;
+    /* Elevated surfaces with better contrast */
+    --card: 222 47% 15%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 210 20% 14%;
-    --popover-foreground: 150 20% 95%;
+    --popover: 222 47% 16%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 168 70% 48%;
-    --primary-foreground: 210 20% 10%;
+    /* Vibrant primary teal that pops in dark mode */
+    --primary: 168 76% 50%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 210 20% 18%;
-    --secondary-foreground: 168 70% 48%;
+    /* Secondary surfaces with better elevation */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 168 76% 70%;
 
-    --muted: 210 20% 18%;
-    --muted-foreground: 150 15% 60%;
+    /* Muted elements with improved readability */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 16 85% 57%;
+    /* Vibrant accent for CTAs */
+    --accent: 16 88% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 45%;
+    /* Softer destructive for dark mode */
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 22%;
-    --input: 210 20% 22%;
-    --ring: 168 70% 48%;
+    /* Status colors optimized for dark mode */
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 58%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 55%;
+    --info-foreground: 0 0% 100%;
 
-    --sidebar-background: 210 20% 12%;
-    --sidebar-foreground: 150 20% 90%;
-    --sidebar-primary: 168 70% 48%;
-    --sidebar-primary-foreground: 210 20% 10%;
-    --sidebar-accent: 210 20% 16%;
-    --sidebar-accent-foreground: 168 70% 48%;
-    --sidebar-border: 210 20% 20%;
-    --sidebar-ring: 168 70% 48%;
+    /* Borders and inputs with better visibility */
+    --border: 217 33% 23%;
+    --input: 217 33% 20%;
+    --ring: 168 76% 50%;
+
+    /* Sidebar with subtle differentiation */
+    --sidebar-background: 222 47% 13%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 168 76% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217 33% 18%;
+    --sidebar-accent-foreground: 168 76% 70%;
+    --sidebar-border: 217 33% 21%;
+    --sidebar-ring: 168 76% 50%;
   }
+
 }
 
 @layer base {
@@ -141,18 +153,31 @@
     font-family: "Inter", system-ui, sans-serif;
     background-image:
       radial-gradient(at 0% 0%, hsla(168, 76%, 42%, 0.03) 0px, transparent 50%),
-      radial-gradient(
-        at 100% 0%,
+      radial-gradient(at 100% 0%,
         hsla(199, 89%, 48%, 0.03) 0px,
-        transparent 50%
-      ),
-      radial-gradient(
-        at 100% 100%,
+        transparent 50%),
+      radial-gradient(at 100% 100%,
         hsla(165, 55%, 95%, 0.1) 0px,
-        transparent 50%
-      );
+        transparent 50%);
     background-attachment: fixed;
   }
+
+  /* Enhanced dark mode background */
+  .dark body {
+    background-image:
+      radial-gradient(at 0% 0%, hsla(168, 76%, 50%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%,
+        hsla(199, 89%, 55%, 0.04) 0px,
+        transparent 50%),
+      radial-gradient(at 100% 100%,
+        hsla(222, 47%, 20%, 0.3) 0px,
+        transparent 50%),
+      radial-gradient(at 50% 50%,
+        hsla(168, 76%, 50%, 0.02) 0px,
+        transparent 70%);
+    background-attachment: fixed;
+  }
+
 
   h1,
   h2,
@@ -189,11 +214,20 @@
 }
 
 @layer components {
+
   /* Card shadows */
   .card-shadow {
     box-shadow:
       0 2px 8px -2px rgba(0, 0, 0, 0.05),
       0 4px 16px -4px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Enhanced card shadows for dark mode */
+  .dark .card-shadow {
+    box-shadow:
+      0 2px 8px -2px rgba(0, 0, 0, 0.3),
+      0 4px 16px -4px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(168, 206, 198, 0.05);
   }
 
   .card-shadow-lg {
@@ -202,23 +236,28 @@
       0 8px 24px -4px rgba(0, 0, 0, 0.1);
   }
 
+  /* Enhanced large card shadows for dark mode */
+  .dark .card-shadow-lg {
+    box-shadow:
+      0 4px 12px -2px rgba(0, 0, 0, 0.4),
+      0 8px 24px -4px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(168, 206, 198, 0.08);
+  }
+
+
   /* Hero gradient background */
   .hero-gradient {
-    background: linear-gradient(
-      135deg,
-      hsl(168 76% 42%) 0%,
-      hsl(199 89% 48%) 50%,
-      hsl(168 76% 52%) 100%
-    );
+    background: linear-gradient(135deg,
+        hsl(168 76% 42%) 0%,
+        hsl(199 89% 48%) 50%,
+        hsl(168 76% 52%) 100%);
   }
 
   /* Subtle background for dashboard */
   .dashboard-bg {
-    background: linear-gradient(
-      180deg,
-      hsl(165 45% 96%) 0%,
-      hsl(165 35% 98%) 100%
-    );
+    background: linear-gradient(180deg,
+        hsl(165 45% 96%) 0%,
+        hsl(165 35% 98%) 100%);
   }
 
   /* Status badges */
@@ -335,6 +374,7 @@
 }
 
 @layer utilities {
+
   /* Health score circle animation */
   @keyframes health-score-fill {
     from {
@@ -347,32 +387,32 @@
   }
 
   /* Stagger children animation - uses tailwind animations */
-  .stagger-children > * {
+  .stagger-children>* {
     opacity: 0;
     animation: fade-in 0.5s ease-out forwards;
   }
 
-  .stagger-children > *:nth-child(1) {
+  .stagger-children>*:nth-child(1) {
     animation-delay: 0ms;
   }
 
-  .stagger-children > *:nth-child(2) {
+  .stagger-children>*:nth-child(2) {
     animation-delay: 75ms;
   }
 
-  .stagger-children > *:nth-child(3) {
+  .stagger-children>*:nth-child(3) {
     animation-delay: 150ms;
   }
 
-  .stagger-children > *:nth-child(4) {
+  .stagger-children>*:nth-child(4) {
     animation-delay: 225ms;
   }
 
-  .stagger-children > *:nth-child(5) {
+  .stagger-children>*:nth-child(5) {
     animation-delay: 300ms;
   }
 
-  .stagger-children > *:nth-child(6) {
+  .stagger-children>*:nth-child(6) {
     animation-delay: 375ms;
   }
 
