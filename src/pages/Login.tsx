@@ -5,18 +5,46 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import HealixLogo from "@/components/HealixLogo";
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
+import { API_BASE_URL } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.href = "/dashboard";
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/patients/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        toast({ title: "Login failed", description: data.detail || data.error || "Invalid credentials", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      // Store user info for later API calls
+      const patient = data.patient || data.data;
+      if (patient?.id) {
+        localStorage.setItem("healix_user_id", patient.id);
+        localStorage.setItem("healix_user_email", email);
+      }
+      window.location.href = "/dashboard";
+    } catch (err) {
+      toast({ title: "Error", description: "Could not connect to server.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -107,10 +135,12 @@ const Login = () => {
                     <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                       <Button
                         type="submit"
+                        disabled={loading}
                         className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-shadow duration-300 hover:shadow-lg"
                       >
+                        {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                         Sign In
-                        <ArrowRight className="ml-2 h-5 w-5" />
+                        {!loading && <ArrowRight className="ml-2 h-5 w-5" />}
                       </Button>
                     </motion.div>
                   </form>
