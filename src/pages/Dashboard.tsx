@@ -39,8 +39,8 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     totalReports: 0,
     lastUpload: "None",
-    activeConditions: "2", // Static for now
-    healthAlerts: "1"      // Static for now
+    activeConditions: "0", // Static for now
+    healthAlerts: "0"      // Static for now
   });
 
   useEffect(() => {

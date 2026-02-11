@@ -103,7 +103,38 @@ const Reports = () => {
         const detailData = await detailRes.json();
 
         // Construct summary from detailed data
-        const aiSummary = `Report for ${detailData.data.patient.name}, Age ${detailData.data.patient.age_years}.`;
+        const aiSummary = `Report for ${detailData.data.patient.name}, Age ${detailData.data.patient.age_years || 'N/A'}.`;
+
+        // Extract and format key findings/biomarkers
+        const biomarkers = detailData.data.biomarkers;
+        let extractedValues = [];
+
+        if (Array.isArray(biomarkers)) {
+          extractedValues = biomarkers.map(b => ({
+            name: b.name,
+            value: `${b.value} ${b.unit || ''}`.trim()
+          }));
+        } else if (typeof biomarkers === 'object' && biomarkers !== null) {
+          extractedValues = Object.entries(biomarkers).map(([key, val]) => {
+            let displayVal = val;
+            if (typeof val === 'object' && val !== null && 'value' in val) {
+              const v = val as { value: any; unit?: string };
+              displayVal = `${v.value} ${v.unit || ''}`;
+            }
+            return {
+              name: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), // Title case
+              value: String(displayVal).trim()
+            };
+          });
+        }
+
+        // Additional fallback: If no biomarkers found, keep original values or add a default
+        if (extractedValues.length === 0) {
+          extractedValues = [
+            { name: "Status", value: "Processed" },
+            { name: "Result", value: "Review Required" }
+          ];
+        }
 
         // Update state with details
         setReports((prev) =>
@@ -120,7 +151,8 @@ const Reports = () => {
               ...r,
               aiSummary,
               biomarkers: detailData.data.biomarkers,
-              name: betterName
+              name: betterName,
+              extractedValues // Store formatted values for display
             };
           })
         );
@@ -225,13 +257,13 @@ const Reports = () => {
                           </div>
                         ) : (
                           <>
-                            <div className="flex gap-4">
-                              {report.values.map((val, idx) => (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                              {(report.extractedValues || report.values).map((val, idx) => (
                                 <div
                                   key={idx}
-                                  className="flex-1 p-3 rounded-xl bg-secondary/50"
+                                  className="p-3 rounded-xl bg-secondary/50"
                                 >
-                                  <p className="text-xs text-muted-foreground">
+                                  <p className="text-xs text-muted-foreground capitalize">
                                     {val.name}
                                   </p>
                                   <p className="text-lg font-bold">{val.value}</p>
