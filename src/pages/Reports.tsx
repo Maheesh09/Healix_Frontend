@@ -31,50 +31,32 @@ const Reports = () => {
       }
 
       try {
-        // 1️⃣ Fetch reports list
+        // 1️⃣ Fetch reports list from Database (Much Faster)
         const res = await fetch(
-          `https://web-production-ecd63.up.railway.app/api/v1/ocr/reports/nic/${nic}`
+          `https://web-production-ecd63.up.railway.app/api/v1/ocr/reports/nic/${nic}?source=database`
         );
 
         if (!res.ok) throw new Error("Failed to fetch reports list");
 
         const listData = await res.json();
 
-        // 2️⃣ Fetch normalized reports in parallel
-        const detailedReports = await Promise.all(
-          listData.reports.map(async (report, index) => {
-            const detailRes = await fetch(
-              `https://web-production-ecd63.up.railway.app/api/v1/ocr/report/${nic}/${report.file_id}/normalized`
-            );
+        // 2️⃣ Map partial data initially
+        const initialReports = listData.reports.map((report) => ({
+          id: report.id,
+          name: report.report_type || "Medical Report",
+          lab: "Hospital Database",
+          date: new Date(report.created_at).toLocaleDateString(),
+          values: [
+            { name: "File Type", value: "PDF" },
+            { name: "Status", value: "Processed" },
+          ],
+          status: "Normal",
+          aiSummary: null, // Loaded on demand
+          fileId: report.file_id,
+          biomarkers: null, // Loaded on demand
+        }));
 
-            if (!detailRes.ok) return null;
-
-            const detailData = await detailRes.json();
-
-            return {
-              id: index + 1,
-              name: detailData.data.report.type,
-              lab:
-                listData.source === "storage"
-                  ? "Cloud Storage"
-                  : "Hospital Database",
-              date: new Date(report.created).toLocaleDateString(),
-              values: [
-                { name: "File Type", value: report.type },
-                {
-                  name: "Size",
-                  value: `${(report.size_bytes / 1024).toFixed(1)} KB`,
-                },
-              ],
-              status: "Normal",
-              aiSummary: `Report for ${detailData.data.patient.name}, Age ${detailData.data.patient.age_years}.`,
-              fileId: report.file_id,
-              biomarkers: detailData.data.biomarkers,
-            };
-          })
-        );
-
-        setReports(detailedReports.filter(Boolean));
+        setReports(initialReports);
       } catch (err) {
         console.error(err);
         setError("Unable to load reports");
@@ -86,8 +68,57 @@ const Reports = () => {
     fetchReports();
   }, []);
 
-  const toggleExpand = (id) => {
-    setExpandedReport(expandedReport === id ? null : id);
+  const toggleExpand = async (id) => {
+    // 1Toggle Expansion
+    const isExpanding = expandedReport !== id;
+    setExpandedReport(isExpanding ? id : null);
+
+    if (!isExpanding) return;
+
+    // Lazy Load Details if missing
+    const reportIndex = reports.findIndex((r) => r.id === id);
+    if (reportIndex === -1) return;
+
+    const report = reports[reportIndex];
+    if (report.aiSummary && report.biomarkers) return; // Already loaded
+
+    try {
+      let nic = localStorage.getItem("NIC");
+      if (nic) nic = nic.replace(/^"|"$/g, "");
+
+      const detailRes = await fetch(
+        `https://web-production-ecd63.up.railway.app/api/v1/ocr/report/${nic}/${report.fileId}/normalized`
+      );
+
+      if (detailRes.ok) {
+        const detailData = await detailRes.json();
+
+        // Construct summary from detailed data
+        const aiSummary = `Report for ${detailData.data.patient.name}, Age ${detailData.data.patient.age_years}.`;
+
+        // Update state with details
+        setReports((prev) =>
+          prev.map((r) => {
+            if (r.id !== id) return r;
+
+            // Try to upgrade the name if it's generic/unknown
+            let betterName = r.name;
+            if ((r.name === "Unknown" || r.name === "Medical Report") && detailData.data.report?.type) {
+              betterName = detailData.data.report.type;
+            }
+
+            return {
+              ...r,
+              aiSummary,
+              biomarkers: detailData.data.biomarkers,
+              name: betterName
+            };
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Failed to load report details", error);
+    }
   };
 
   const getStatusStyle = (status) => {
@@ -177,34 +208,43 @@ const Reports = () => {
                 {expandedReport === report.id && (
                   <div className="px-4 pb-4 border-t">
                     <div className="pt-4 space-y-4">
-                      <div className="flex gap-4">
-                        {report.values.map((val, idx) => (
-                          <div
-                            key={idx}
-                            className="flex-1 p-3 rounded-xl bg-secondary/50"
-                          >
-                            <p className="text-xs text-muted-foreground">
-                              {val.name}
-                            </p>
-                            <p className="text-lg font-bold">{val.value}</p>
+                      {!report.aiSummary ? (
+                        <div className="flex justify-center items-center py-4">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                          <span className="ml-2 text-sm text-muted-foreground">Loading details...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex gap-4">
+                            {report.values.map((val, idx) => (
+                              <div
+                                key={idx}
+                                className="flex-1 p-3 rounded-xl bg-secondary/50"
+                              >
+                                <p className="text-xs text-muted-foreground">
+                                  {val.name}
+                                </p>
+                                <p className="text-lg font-bold">{val.value}</p>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
 
-                      <p className="text-sm bg-muted/30 p-3 rounded-xl">
-                        {report.aiSummary}
-                      </p>
+                          <p className="text-sm bg-muted/30 p-3 rounded-xl">
+                            {report.aiSummary}
+                          </p>
 
-                      <div className="flex gap-3">
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Eye className="h-4 w-4" />
-                          View Full Report
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Download className="h-4 w-4" />
-                          Download
-                        </Button>
-                      </div>
+                          <div className="flex gap-3">
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <Eye className="h-4 w-4" />
+                              View Full Report
+                            </Button>
+                            <Button variant="outline" size="sm" className="gap-2">
+                              <Download className="h-4 w-4" />
+                              Download
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
