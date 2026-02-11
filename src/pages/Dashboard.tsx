@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Summary cards data
 const summaryCards = [
@@ -44,68 +45,68 @@ const summaryCards = [
 
 // Recent activity data
 const recentActivity = [
-  {
-    icon: Upload,
-    title: "Blood Test Results uploaded",
-    subtitle: "Complete Blood Count from Asiri Lab",
-    time: "2 hours ago"
-  },
-  {
-    icon: Eye,
-    title: "Viewed cholesterol trend",
-    subtitle: "6-month trend analysis",
-    time: "Yesterday"
-  },
-  {
-    icon: Pill,
-    title: "Medication reminder set",
-    subtitle: "Vitamin D supplement added",
-    time: "2 days ago"
-  },
-  {
-    icon: Lightbulb,
-    title: "New health insight",
-    subtitle: "Blood pressure trending higher",
-    time: "3 days ago"
-  },
+  // {
+  //   icon: Upload,
+  //   title: "Blood Test Results uploaded",
+  //   subtitle: "Complete Blood Count from Asiri Lab",
+  //   time: "2 hours ago"
+  // },
+  // {
+  //   icon: Eye,
+  //   title: "Viewed cholesterol trend",
+  //   subtitle: "6-month trend analysis",
+  //   time: "Yesterday"
+  // },
+  // {
+  //   icon: Pill,
+  //   title: "Medication reminder set",
+  //   subtitle: "Vitamin D supplement added",
+  //   time: "2 days ago"
+  // },
+  // {
+  //   icon: Lightbulb,
+  //   title: "New health insight",
+  //   subtitle: "Blood pressure trending higher",
+  //   time: "3 days ago"
+  // },
 ];
 
 // Health insights data
 const healthInsights = [
-  {
-    title: "Blood Pressure Trending Up",
-    description: "Your systolic blood pressure has increased by 10 mmHg over the past 6 months. Consider lifestyle modifications.",
-    color: "bg-warning/10 border-warning/20",
-    iconColor: "text-warning",
-  },
-  {
-    title: "Cholesterol Improving",
-    description: "Great progress! Your total cholesterol has decreased by 20 mg/dL since July.",
-    color: "bg-success/10 border-success/20",
-    iconColor: "text-success",
-  },
-  {
-    title: "Vitamin D Below Optimal",
-    description: "Your Vitamin D level is 28 ng/mL, slightly below the optimal range of 30-100 ng/mL.",
-    color: "bg-warning/10 border-warning/20",
-    iconColor: "text-warning",
-  },
+  // {
+  //   title: "Blood Pressure Trending Up",
+  //   description: "Your systolic blood pressure has increased by 10 mmHg over the past 6 months. Consider lifestyle modifications.",
+  //   color: "bg-warning/10 border-warning/20",
+  //   iconColor: "text-warning",
+  // },
+  // {
+  //   title: "Cholesterol Improving",
+  //   description: "Great progress! Your total cholesterol has decreased by 20 mg/dL since July.",
+  //   color: "bg-success/10 border-success/20",
+  //   iconColor: "text-success",
+  // },
+  // {
+  //   title: "Vitamin D Below Optimal",
+  //   description: "Your Vitamin D level is 28 ng/mL, slightly below the optimal range of 30-100 ng/mL.",
+  //   color: "bg-warning/10 border-warning/20",
+  //   iconColor: "text-warning",
+  // },
 ];
 
 // Biomarker data for health snapshot
 const biomarkers = [
-  { name: "Glucose", value: 98, unit: "mg/dL", min: 70, max: 100, status: "Normal" },
-  { name: "Total Cholesterol", value: 195, unit: "mg/dL", min: 0, max: 200, status: "Normal" },
-  { name: "Blood Pressure", value: 128, secondary: 82, unit: "mmHg", min: 90, max: 120, status: "Watch" },
+  // { name: "Glucose", value: 98, unit: "mg/dL", min: 70, max: 100, status: "Normal" },
+  // { name: "Total Cholesterol", value: 195, unit: "mg/dL", min: 0, max: 200, status: "Normal" },
+  // { name: "Blood Pressure", value: 128, secondary: 82, unit: "mmHg", min: 90, max: 120, status: "Watch" },
 ];
 
 const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.06,
-    },
-  },
+  // hidden: {},
+  // visible: {
+  //   transition: {
+  //     staggerChildren: 0.06,
+  //   },
+  // },
 };
 
 const itemVariants = {
@@ -118,6 +119,8 @@ const itemVariants = {
 };
 
 const Dashboard = () => {
+  const { patient } = useAuth();
+
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Welcome message */}
@@ -127,7 +130,7 @@ const Dashboard = () => {
         transition={{ duration: 0.3 }}
       >
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-          Welcome back, Shagee
+          Welcome back, {patient?.full_name || 'there'}
         </h1>
         <p className="text-muted-foreground">
           Here's an overview of your health profile
@@ -167,7 +170,7 @@ const Dashboard = () => {
       {/* Main content grid */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Health Snapshot - Takes 2 columns */}
-        <motion.div
+        {/* <motion.div
           className="lg:col-span-2"
           initial={{ opacity: 0.8, x: -15 }}
           animate={{ opacity: 1, x: 0 }}
@@ -187,7 +190,6 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
-                {/* Health Score Circle */}
                 <div className="flex flex-col items-center justify-center">
                   <div className="relative w-40 h-40">
                     <svg className="w-full h-full transform -rotate-90">
@@ -222,7 +224,6 @@ const Dashboard = () => {
                   <p className="text-sm text-muted-foreground mt-2">Based on your latest biomarkers</p>
                 </div>
 
-                {/* Biomarker bars */}
                 <div className="space-y-4">
                   {biomarkers.map((marker, index) => (
                     <div key={index} className="space-y-2">
@@ -263,7 +264,7 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </motion.div> */}
 
         {/* Recent Activity */}
         <motion.div
@@ -271,7 +272,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.25 }}
         >
-          <Card className="shadow-card border-0">
+          {/* <Card className="shadow-card border-0">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
             </CardHeader>
@@ -306,7 +307,7 @@ const Dashboard = () => {
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </motion.div>
       </div>
 
@@ -319,12 +320,12 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">Health Insights</h2>
           <motion.div whileHover={{ x: 3 }} transition={{ duration: 0.2 }}>
-            <Link
+            {/* <Link
               to="/trends"
               className="text-sm text-primary hover:text-primary/80 flex items-center gap-1 transition-colors duration-300"
             >
               View All <ChevronRight className="h-4 w-4" />
-            </Link>
+            </Link> */}
           </motion.div>
         </div>
         <motion.div
