@@ -77,15 +77,15 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-gray-400">
                 <Phone className="h-4 w-4 text-primary" />
-                +94 712 345 678
+                +94 77 108 9061
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-400">
                 <Mail className="h-4 w-4 text-primary" />
-                support@healix.com
+                algoknights001@gmail.com
               </li>
               <li className="flex items-start gap-2 text-sm text-gray-400">
                 <MapPin className="h-4 w-4 text-primary mt-0.5" />
-                123 Health Street, Med City<br />Colombo
+                49/2 Melfort Estate, Kothalawala,<br />Kaduwela
               </li>
             </ul>
           </div>
