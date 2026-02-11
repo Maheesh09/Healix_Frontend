@@ -13,34 +13,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/services/api";
 
-// Summary cards data
-const summaryCards = [
-  {
-    icon: FileText,
-    label: "Total Reports",
-    value: "47",
-    color: "bg-primary/10 text-primary"
-  },
-  {
-    icon: AlertTriangle,
-    label: "Active Conditions",
-    value: "2",
-    color: "bg-warning/10 text-warning"
-  },
-  {
-    icon: Calendar,
-    label: "Last Upload",
-    value: "Dec 28, 2025",
-    color: "bg-info/10 text-info"
-  },
-  {
-    icon: Bell,
-    label: "Health Alerts",
-    value: "1",
-    color: "bg-destructive/10 text-destructive"
-  },
-];
-
 const containerVariants = {
   hidden: {},
   visible: {
@@ -64,6 +36,12 @@ const Dashboard = () => {
   const [fbsData, setFbsData] = useState<{ value: string; unit: string; date: string } | null>(null);
   const [cholesterolData, setCholesterolData] = useState<{ value: string; unit: string; date: string } | null>(null);
   const [loadingMetrics, setLoadingMetrics] = useState(true);
+  const [stats, setStats] = useState({
+    totalReports: 0,
+    lastUpload: "None",
+    activeConditions: "2", // Static for now
+    healthAlerts: "1"      // Static for now
+  });
 
   useEffect(() => {
     const fetchHealthMetrics = async () => {
@@ -85,6 +63,15 @@ const Dashboard = () => {
         const sortedReports = listData.reports.sort((a: any, b: any) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
+
+        // Update Stats
+        setStats(prev => ({
+          ...prev,
+          totalReports: sortedReports.length,
+          lastUpload: sortedReports.length > 0
+            ? new Date(sortedReports[0].created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            : "None"
+        }));
 
         // Find latest potential reports
         const fbsReport = sortedReports.find((r: any) =>
@@ -147,6 +134,34 @@ const Dashboard = () => {
 
     fetchHealthMetrics();
   }, []);
+
+  // Summary cards data with dynamic values
+  const summaryCards = [
+    {
+      icon: FileText,
+      label: "Total Reports",
+      value: stats.totalReports.toString(),
+      color: "bg-primary/10 text-primary"
+    },
+    {
+      icon: AlertTriangle,
+      label: "Active Conditions",
+      value: stats.activeConditions,
+      color: "bg-warning/10 text-warning"
+    },
+    {
+      icon: Calendar,
+      label: "Last Upload",
+      value: stats.lastUpload,
+      color: "bg-info/10 text-info"
+    },
+    {
+      icon: Bell,
+      label: "Health Alerts",
+      value: stats.healthAlerts,
+      color: "bg-destructive/10 text-destructive"
+    },
+  ];
 
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -229,9 +244,8 @@ const Dashboard = () => {
                     </div>
 
                     {loadingMetrics ? (
-                      <div className="animate-pulse space-y-3">
-                        <div className="h-8 w-24 bg-muted rounded"></div>
-                        <div className="h-4 w-32 bg-muted rounded"></div>
+                      <div className="flex justify-center items-center py-6">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       </div>
                     ) : fbsData ? (
                       <div>
@@ -267,9 +281,8 @@ const Dashboard = () => {
                     </div>
 
                     {loadingMetrics ? (
-                      <div className="animate-pulse space-y-3">
-                        <div className="h-8 w-24 bg-muted rounded"></div>
-                        <div className="h-4 w-32 bg-muted rounded"></div>
+                      <div className="flex justify-center items-center py-6">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warning"></div>
                       </div>
                     ) : cholesterolData ? (
                       <div>
