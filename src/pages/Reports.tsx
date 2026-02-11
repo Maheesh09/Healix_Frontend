@@ -58,7 +58,7 @@ const Reports = () => {
             { name: "File Type", value: "PDF" },
             { name: "Status", value: "Processed" },
           ],
-          status: "Normal",
+          status: "Normal", // Default, will update
           aiSummary: null, // Loaded on demand
           fileId: report.file_id,
           biomarkers: null, // Loaded on demand
@@ -66,6 +66,60 @@ const Reports = () => {
 
         setReports(initialReports);
         setError(null);
+
+        // Background update for statuses
+        initialReports.forEach(async (report) => {
+          try {
+            const detailRes = await fetch(`${API_BASE_URL}/ocr/report/${nic}/${report.fileId}/normalized`);
+            if (!detailRes.ok) return;
+            const detailData = await detailRes.json();
+
+            const reportType = (detailData.data.report?.type || report.name).toLowerCase();
+            let newStatus = "Normal";
+
+            const checkValue = (name: string, value: any) => {
+              const valNum = parseFloat(value);
+              if (isNaN(valNum)) return null;
+              const lowerName = name.toLowerCase();
+
+              if (lowerName.includes("glucose") || lowerName.includes("fbs") || lowerName.includes("fasting")) {
+                if (valNum >= 126) return "Alert";
+                if (valNum >= 100) return "Watch";
+                return "Normal";
+              }
+
+              if (lowerName.includes("cholesterol") || lowerName.includes("total")) {
+                if (valNum >= 240) return "Alert";
+                if (valNum >= 200) return "Watch";
+                return "Normal";
+              }
+              return null;
+            };
+
+            if (reportType.includes("blood count") || reportType.includes("fbc") || reportType.includes("cbc")) {
+              newStatus = "";
+            } else {
+              let worstStatus = "Normal";
+              // Extract vals similar to toggleExpand logic to be safe
+              const biomarkers = detailData.data.biomarkers;
+              let items = [];
+              if (Array.isArray(biomarkers)) items = biomarkers;
+              else if (typeof biomarkers === 'object' && biomarkers) items = Object.entries(biomarkers).map(([k, v]) => ({ name: k, value: (v as any)?.value || v }));
+
+              for (const item of items) {
+                const s = checkValue(item.name, item.value);
+                if (s === "Alert") { worstStatus = "Alert"; break; }
+                if (s === "Watch") worstStatus = "Watch";
+              }
+              newStatus = worstStatus;
+            }
+
+            setReports(prev => prev.map(r => r.id === report.id ? { ...r, status: newStatus } : r));
+          } catch (e) {
+            console.error("Bg update fail", e);
+          }
+        });
+
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : "Unable to load reports");
@@ -147,11 +201,57 @@ const Reports = () => {
               betterName = detailData.data.report.type;
             }
 
+            // Determine status based on values
+            let status = "Normal";
+
+            const checkValue = (name: string, value: any): string | null => {
+              const valNum = parseFloat(value);
+              if (isNaN(valNum)) return null;
+
+              const lowerName = name.toLowerCase();
+
+              // Glucose Logic
+              if (lowerName.includes("glucose") || lowerName.includes("fbs") || lowerName.includes("fasting")) {
+                if (valNum >= 126) return "Alert";
+                if (valNum >= 100) return "Watch";
+                return "Normal";
+              }
+
+              // Lipid/Cholesterol Logic
+              if (lowerName.includes("cholesterol") || lowerName.includes("total")) {
+                if (valNum >= 240) return "Alert";
+                if (valNum >= 200) return "Watch";
+                return "Normal";
+              }
+
+              return null;
+            };
+
+            // Calculate overall status for this report
+            if (betterName.toLowerCase().includes("blood count") || betterName.toLowerCase().includes("fbc") || betterName.toLowerCase().includes("cbc")) {
+              status = ""; // No label for FBC
+            } else {
+              // Check all extracted values
+              let worstStatus = "Normal";
+              for (const item of extractedValues) {
+                const itemStatus = checkValue(item.name, item.value);
+                if (itemStatus === "Alert") {
+                  worstStatus = "Alert";
+                  break;
+                }
+                if (itemStatus === "Watch" && worstStatus !== "Alert") {
+                  worstStatus = "Watch";
+                }
+              }
+              status = worstStatus;
+            }
+
             return {
               ...r,
               aiSummary,
               biomarkers: detailData.data.biomarkers,
               name: betterName,
+              status,
               extractedValues // Store formatted values for display
             };
           })
@@ -170,6 +270,8 @@ const Reports = () => {
         return "bg-warning/10 text-warning border-warning/20";
       case "Alert":
         return "bg-destructive/10 text-destructive border-destructive/20";
+      case "":
+        return "hidden"; // Hide label for FBC
       default:
         return "bg-muted text-muted-foreground";
     }
