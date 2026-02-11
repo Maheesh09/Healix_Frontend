@@ -1,66 +1,73 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
+import { Shield, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CTASection = () => {
   return (
-    <section className="py-16 bg-background">
+    <section className="py-24 bg-background relative z-10">
       <div className="container">
         <motion.div
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-healix-mint to-info p-6 sm:p-8 lg:p-12 text-center"
+          className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary via-healix-mint to-info p-8 sm:p-12 lg:p-16 text-center shadow-2xl"
           initial={{ opacity: 0.9, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.5 }}
         >
           {/* Animated background elements */}
+          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
+
           <motion.div
-            className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"
-            animate={{ opacity: [0.5, 0.8, 0.5] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
           <motion.div
-            className="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl"
-            animate={{ opacity: [0.5, 0.8, 0.5] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          />
-          <motion.div
-            className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-0 left-0 w-80 h-80 bg-healix-teal-dark/20 rounded-full blur-3xl"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           />
 
-          {/* Icon */}
+          {/* Floating Glass Icon */}
           <motion.div
-            className="relative mx-auto w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6"
-            animate={{ y: [0, -4, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="relative mx-auto w-20 h-20 glass-card rounded-2xl flex items-center justify-center mb-8 shadow-lg border-white/30"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Shield className="h-8 w-8 text-white" />
+            <Shield className="h-10 w-10 text-white" />
           </motion.div>
 
-          <h2 className="relative text-2xl lg:text-3xl font-bold text-white mb-4">
-            Take Control of Your Health Data
+          <h2 className="relative text-3xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+            Take Control of Your <br className="hidden sm:block" />
+            Health Data Today
           </h2>
 
-          <p className="relative text-white/80 text-lg mb-8 max-w-lg mx-auto">
-            Start your lifelong digital health profile today. Secure, private and always accessible.
+          <p className="relative text-blue-50 text-xl mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
+            Join thousands of users who have already simplified their health journey.
+            Secure, private, and smart.
           </p>
 
           <motion.div
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-block"
+            className="inline-block relative z-10"
           >
             <Button
               asChild
               size="lg"
-              className="relative rounded-full bg-white text-primary hover:bg-white/90 font-semibold px-8 transition-shadow duration-300 hover:shadow-xl"
+              className="h-16 px-10 rounded-full bg-white text-primary hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group"
             >
-              <Link to="/signup">Get Started Free</Link>
+              <Link to="/signup">
+                Get Started Free
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </Button>
           </motion.div>
+
+          {/* Decorative bottom text */}
+          <p className="relative mt-8 text-white/60 text-sm font-medium">
+            No credit card required · Free plan forever
+          </p>
         </motion.div>
       </div>
     </section>
@@ -68,3 +75,4 @@ const CTASection = () => {
 };
 
 export default CTASection;
+

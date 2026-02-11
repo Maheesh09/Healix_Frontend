@@ -36,7 +36,7 @@ const HealixLogo = forwardRef<HTMLDivElement, HealixLogoProps>(
         />
 
         {showText && (
-          <span className={cn("font-bold transition-colors duration-300", textSizes[size])}>
+          <span className={cn("font-bold text-current transition-colors duration-300", textSizes[size])}>
             Healix
           </span>
         )}

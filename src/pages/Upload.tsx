@@ -77,7 +77,7 @@ const UploadPage = () => {
       formData.append("file", selectedFile);
 
       const response = await fetch(
-        `http://127.0.0.1:8080/api/v1/ocr/upload?nic=${NIC}`,
+        `https://web-production-ecd63.up.railway.app/api/v1/ocr/upload?nic=${NIC}`,
         { method: "POST", body: formData }
       );
 
