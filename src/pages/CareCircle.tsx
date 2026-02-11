@@ -284,7 +284,7 @@ const CareCircle = () => {
               <FileText className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">25</p>
+              <p className="text-2xl font-bold text-foreground">0</p>
               <p className="text-sm text-muted-foreground">Reports Shared</p>
             </div>
           </CardContent>
