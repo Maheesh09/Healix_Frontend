@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { apiService, CareCircleMember } from "@/services/api";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const recentShares = [
   { report: "Blood Test Results", sharedWith: "Dr. Priyantha Silva", time: "Today" },
@@ -41,6 +42,7 @@ const CareCircle = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { patient } = useAuth();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -49,15 +51,18 @@ const CareCircle = () => {
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch members on component mount
+  // Fetch members on component mount and when patient changes
   useEffect(() => {
-    fetchMembers();
-  }, []);
+    if (patient?.id) {
+      fetchMembers();
+    }
+  }, [patient?.id]);
 
   const fetchMembers = async () => {
     setLoading(true);
     setError(null);
-    const response = await apiService.getCareCircleMembers();
+    if (!patient?.id) return;
+    const response = await apiService.getCareCircleMembers(patient.id);
 
     if (response.success && response.data) {
       setMembers(response.data);
@@ -76,7 +81,15 @@ const CareCircle = () => {
     setSubmitting(true);
     setError(null);
 
-    const response = await apiService.createCareCircleMember(formData);
+    if (!patient?.id) {
+      setError("You must be logged in to add members");
+      return;
+    }
+
+    const response = await apiService.createCareCircleMember({
+      ...formData,
+      patient_id: patient.id
+    });
 
     if (response.success && response.data) {
       setMembers([response.data, ...members]);
