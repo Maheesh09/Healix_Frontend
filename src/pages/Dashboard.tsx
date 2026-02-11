@@ -1,19 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   FileText,
   AlertTriangle,
   Calendar,
   Bell,
-  Upload,
-  Eye,
-  Pill,
-  Lightbulb,
-  ChevronRight,
+  Activity,
+  Droplet
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/services/api";
 
 // Summary cards data
 const summaryCards = [
@@ -43,70 +41,13 @@ const summaryCards = [
   },
 ];
 
-// Recent activity data
-const recentActivity = [
-  // {
-  //   icon: Upload,
-  //   title: "Blood Test Results uploaded",
-  //   subtitle: "Complete Blood Count from Asiri Lab",
-  //   time: "2 hours ago"
-  // },
-  // {
-  //   icon: Eye,
-  //   title: "Viewed cholesterol trend",
-  //   subtitle: "6-month trend analysis",
-  //   time: "Yesterday"
-  // },
-  // {
-  //   icon: Pill,
-  //   title: "Medication reminder set",
-  //   subtitle: "Vitamin D supplement added",
-  //   time: "2 days ago"
-  // },
-  // {
-  //   icon: Lightbulb,
-  //   title: "New health insight",
-  //   subtitle: "Blood pressure trending higher",
-  //   time: "3 days ago"
-  // },
-];
-
-// Health insights data
-const healthInsights = [
-  // {
-  //   title: "Blood Pressure Trending Up",
-  //   description: "Your systolic blood pressure has increased by 10 mmHg over the past 6 months. Consider lifestyle modifications.",
-  //   color: "bg-warning/10 border-warning/20",
-  //   iconColor: "text-warning",
-  // },
-  // {
-  //   title: "Cholesterol Improving",
-  //   description: "Great progress! Your total cholesterol has decreased by 20 mg/dL since July.",
-  //   color: "bg-success/10 border-success/20",
-  //   iconColor: "text-success",
-  // },
-  // {
-  //   title: "Vitamin D Below Optimal",
-  //   description: "Your Vitamin D level is 28 ng/mL, slightly below the optimal range of 30-100 ng/mL.",
-  //   color: "bg-warning/10 border-warning/20",
-  //   iconColor: "text-warning",
-  // },
-];
-
-// Biomarker data for health snapshot
-const biomarkers = [
-  // { name: "Glucose", value: 98, unit: "mg/dL", min: 70, max: 100, status: "Normal" },
-  // { name: "Total Cholesterol", value: 195, unit: "mg/dL", min: 0, max: 200, status: "Normal" },
-  // { name: "Blood Pressure", value: 128, secondary: 82, unit: "mmHg", min: 90, max: 120, status: "Watch" },
-];
-
 const containerVariants = {
-  // hidden: {},
-  // visible: {
-  //   transition: {
-  //     staggerChildren: 0.06,
-  //   },
-  // },
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.06,
+    },
+  },
 };
 
 const itemVariants = {
@@ -120,6 +61,92 @@ const itemVariants = {
 
 const Dashboard = () => {
   const { patient } = useAuth();
+  const [fbsData, setFbsData] = useState<{ value: string; unit: string; date: string } | null>(null);
+  const [cholesterolData, setCholesterolData] = useState<{ value: string; unit: string; date: string } | null>(null);
+  const [loadingMetrics, setLoadingMetrics] = useState(true);
+
+  useEffect(() => {
+    const fetchHealthMetrics = async () => {
+      let nic = localStorage.getItem("NIC");
+      if (nic) nic = nic.replace(/^"|"$/g, "");
+
+      if (!nic) {
+        setLoadingMetrics(false);
+        return;
+      }
+
+      try {
+        // 1. Fetch all reports to find relevant ones
+        const res = await fetch(`${API_BASE_URL}/ocr/reports/nic/${nic}?source=database`);
+        if (!res.ok) throw new Error("Failed to fetch reports");
+        const listData = await res.json();
+
+        // Sort reports by date (newest first)
+        const sortedReports = listData.reports.sort((a: any, b: any) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        // Find latest potential reports
+        const fbsReport = sortedReports.find((r: any) =>
+          r.report_type?.toLowerCase().includes("glucose") ||
+          r.report_type?.toLowerCase().includes("fbs") ||
+          r.report_type?.toLowerCase().includes("sugar")
+        );
+
+        const lipidReport = sortedReports.find((r: any) =>
+          r.report_type?.toLowerCase().includes("lipid") ||
+          r.report_type?.toLowerCase().includes("cholesterol")
+        );
+
+        // Helper to fetch details and extract value
+        const fetchDetails = async (report: any, keys: string[]) => {
+          if (!report) return null;
+          try {
+            const detailRes = await fetch(`${API_BASE_URL}/ocr/report/${nic}/${report.file_id}/normalized`);
+            if (!detailRes.ok) return null;
+            const detailData = await detailRes.json();
+            const markers = detailData.data.biomarkers;
+
+            // Check if markers is object or array and find value
+            let found = null;
+            if (Array.isArray(markers)) {
+              found = markers.find((m: any) => keys.some(k => m.name.toLowerCase().includes(k)));
+              if (found) return { value: found.value, unit: found.unit || '' };
+            } else if (typeof markers === 'object' && markers !== null) {
+              for (const key of Object.keys(markers)) {
+                if (keys.some(k => key.toLowerCase().includes(k))) {
+                  // Value might be string, number or object
+                  const val = markers[key];
+                  if (typeof val === 'object' && val.value) return { value: val.value, unit: val.unit || '' };
+                  return { value: val, unit: '' };
+                }
+              }
+            }
+            return null;
+          } catch (e) {
+            console.error("Error fetching details", e);
+            return null;
+          }
+        };
+
+        // Parallel fetch
+        const [fbs, lipid] = await Promise.all([
+          fetchDetails(fbsReport, ["fasting plasma glucose", "glucose", "fbs"]),
+          fetchDetails(lipidReport, ["total cholesterol", "cholesterol"])
+        ]);
+
+        if (fbs) setFbsData({ ...fbs, date: new Date(fbsReport.created_at).toLocaleDateString() });
+        if (lipid) setCholesterolData({ ...lipid, date: new Date(lipidReport.created_at).toLocaleDateString() });
+
+      } catch (err) {
+        console.error("Error loading health metrics", err);
+      } finally {
+        setLoadingMetrics(false);
+      }
+    };
+
+    fetchHealthMetrics();
+  }, []);
 
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -169,204 +196,103 @@ const Dashboard = () => {
 
       {/* Main content grid */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Health Snapshot - Takes 2 columns */}
-        {/* <motion.div
-          className="lg:col-span-2"
-          initial={{ opacity: 0.8, x: -15 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <Card className="shadow-card border-0">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg font-semibold">Health Snapshot</CardTitle>
-              <motion.div whileHover={{ x: 3 }} transition={{ duration: 0.2 }}>
-                <Link
-                  to="/trends"
-                  className="text-sm text-primary hover:text-primary/80 flex items-center gap-1 transition-colors duration-300"
-                >
-                  View All <ChevronRight className="h-4 w-4" />
-                </Link>
-              </motion.div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex flex-col items-center justify-center">
-                  <div className="relative w-40 h-40">
-                    <svg className="w-full h-full transform -rotate-90">
-                      <circle
-                        cx="80"
-                        cy="80"
-                        r="70"
-                        stroke="hsl(var(--muted))"
-                        strokeWidth="12"
-                        fill="none"
-                      />
-                      <motion.circle
-                        cx="80"
-                        cy="80"
-                        r="70"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth="12"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeDasharray="440"
-                        initial={{ strokeDashoffset: 440 }}
-                        animate={{ strokeDashoffset: 66 }}
-                        transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
-                        className="drop-shadow-lg"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-4xl font-bold text-primary">85</span>
-                      <span className="text-sm text-muted-foreground">Health Score</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">Based on your latest biomarkers</p>
-                </div>
-
-                <div className="space-y-4">
-                  {biomarkers.map((marker, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">{marker.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-foreground">
-                            {marker.value}
-                            {marker.secondary && `/${marker.secondary}`} {marker.unit}
-                          </span>
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded-full ${marker.status === "Normal"
-                              ? "bg-success/10 text-success"
-                              : "bg-warning/10 text-warning"
-                              }`}
-                          >
-                            {marker.status}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <motion.div
-                          className={`h-full rounded-full ${marker.status === "Normal" ? "bg-primary" : "bg-warning"
-                            }`}
-                          initial={{ width: 0 }}
-                          animate={{ width: `${((marker.value - marker.min) / (marker.max - marker.min)) * 100}%` }}
-                          transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 + index * 0.1 }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{marker.min}</span>
-                        <span>Optimal range</span>
-                        <span>{marker.max}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div> */}
-
-        {/* Recent Activity */}
         <motion.div
-          initial={{ opacity: 0.8, x: 15 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.4, delay: 0.25 }}
+          initial={{ opacity: 0.8, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="lg:col-span-3"
         >
-          {/* <Card className="shadow-card border-0">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold">Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => (
-                  <motion.div
-                    key={index}
-                    className="flex items-start gap-3 p-2 -mx-2 rounded-lg cursor-pointer group"
-                    whileHover={{ backgroundColor: "hsl(var(--muted) / 0.5)", x: 4 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <motion.div
-                      className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <activity.icon className="h-4 w-4 text-primary" />
-                    </motion.div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors duration-300">
-                        {activity.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {activity.subtitle}
-                      </p>
+          <div className="flex items-center justify-between mb-4">
+            {/* Removed "Health Insights" text as requested */}
+            <div className="h-1"></div>
+          </div>
+
+          <motion.div
+            className="grid md:grid-cols-2 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {/* Fasting Plasma Glucose Card */}
+            <motion.div variants={itemVariants} className="h-full">
+              <Card className="h-full shadow-card border-0 overflow-hidden relative group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Droplet className="w-24 h-24 text-primary" />
+                </div>
+                <CardContent className="p-6 flex flex-col justify-between h-full z-10 relative">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                        <Droplet className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-xl font-bold">Fasting Plasma Glucose</h3>
                     </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {activity.time}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card> */}
+
+                    {loadingMetrics ? (
+                      <div className="animate-pulse space-y-3">
+                        <div className="h-8 w-24 bg-muted rounded"></div>
+                        <div className="h-4 w-32 bg-muted rounded"></div>
+                      </div>
+                    ) : fbsData ? (
+                      <div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-4xl font-bold text-foreground">{fbsData.value}</span>
+                          <span className="text-lg text-muted-foreground">{fbsData.unit}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Latest reading from {fbsData.date}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground py-4">No recent glucose data found.</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Total Cholesterol Card */}
+            <motion.div variants={itemVariants} className="h-full">
+              <Card className="h-full shadow-card border-0 overflow-hidden relative group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Activity className="w-24 h-24 text-warning" />
+                </div>
+                <CardContent className="p-6 flex flex-col justify-between h-full z-10 relative">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 rounded-xl bg-warning/10 text-warning">
+                        <Activity className="w-6 h-6" />
+                      </div>
+                      <h3 className="text-xl font-bold">Total Cholesterol</h3>
+                    </div>
+
+                    {loadingMetrics ? (
+                      <div className="animate-pulse space-y-3">
+                        <div className="h-8 w-24 bg-muted rounded"></div>
+                        <div className="h-4 w-32 bg-muted rounded"></div>
+                      </div>
+                    ) : cholesterolData ? (
+                      <div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-4xl font-bold text-foreground">{cholesterolData.value}</span>
+                          <span className="text-lg text-muted-foreground">{cholesterolData.unit}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Latest reading from {cholesterolData.date}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground py-4">No recent lipid data found.</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+          </motion.div>
         </motion.div>
       </div>
 
-      {/* Health Insights */}
-      <motion.div
-        initial={{ opacity: 0.8, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-foreground">Health Insights</h2>
-          <motion.div whileHover={{ x: 3 }} transition={{ duration: 0.2 }}>
-            {/* <Link
-              to="/trends"
-              className="text-sm text-primary hover:text-primary/80 flex items-center gap-1 transition-colors duration-300"
-            >
-              View All <ChevronRight className="h-4 w-4" />
-            </Link> */}
-          </motion.div>
-        </div>
-        <motion.div
-          className="grid md:grid-cols-3 gap-4"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {healthInsights.map((insight, index) => (
-            <motion.div key={index} variants={itemVariants}>
-              <motion.div
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              >
-                <Card
-                  className={`shadow-card border cursor-pointer hover:shadow-card-hover transition-shadow duration-300 group ${insight.color}`}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <motion.div
-                        className="w-8 h-8 rounded-lg bg-background flex items-center justify-center flex-shrink-0"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Lightbulb className={`h-4 w-4 ${insight.iconColor}`} />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
-                          {insight.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          {insight.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.div>
     </PageTransition>
   );
 };
