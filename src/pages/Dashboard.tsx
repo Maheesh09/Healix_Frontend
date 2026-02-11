@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Summary cards data
 const summaryCards = [
@@ -118,6 +119,8 @@ const itemVariants = {
 };
 
 const Dashboard = () => {
+  const { patient } = useAuth();
+
   return (
     <PageTransition className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Welcome message */}
@@ -127,7 +130,7 @@ const Dashboard = () => {
         transition={{ duration: 0.3 }}
       >
         <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
-          Welcome back, Shagee
+          Welcome back, {patient?.full_name || 'there'}
         </h1>
         <p className="text-muted-foreground">
           Here's an overview of your health profile

@@ -18,18 +18,6 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
       </div>
 
-      {/* Floating elements */}
-      <motion.div
-        className="absolute top-40 right-[10%] w-4 h-4 bg-white/40 rounded-full z-10"
-        animate={{ y: [0, -20, 0], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-40 left-[10%] w-6 h-6 bg-primary/40 rounded-full z-10"
-        animate={{ y: [0, -30, 0], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-      />
-
       <div className="container relative z-10 py-20">
         <div className="max-w-3xl">
           {/* Content */}
