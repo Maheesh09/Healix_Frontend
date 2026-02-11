@@ -45,13 +45,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchHealthMetrics = async () => {
-      let nic = localStorage.getItem("NIC");
-      if (nic) nic = nic.replace(/^"|"$/g, "");
+      // Strictly use the patient from context to ensure user-scoped data
+      const nic = patient?.nic;
 
       if (!nic) {
         setLoadingMetrics(false);
+        setStats({
+          totalReports: 0,
+          lastUpload: "None",
+          activeConditions: "0",
+          healthAlerts: "0"
+        });
+        setFbsData(null);
+        setCholesterolData(null);
         return;
       }
+
+      setLoadingMetrics(true); // Reset loading state when fetching for a new user
 
       try {
         // 1. Fetch all reports to find relevant ones
@@ -123,17 +133,23 @@ const Dashboard = () => {
         ]);
 
         if (fbs) setFbsData({ ...fbs, date: new Date(fbsReport.created_at).toLocaleDateString() });
+        else setFbsData(null); // Clear if not found
+
         if (lipid) setCholesterolData({ ...lipid, date: new Date(lipidReport.created_at).toLocaleDateString() });
+        else setCholesterolData(null); // Clear if not found
 
       } catch (err) {
         console.error("Error loading health metrics", err);
+        // Reset on error
+        setFbsData(null);
+        setCholesterolData(null);
       } finally {
         setLoadingMetrics(false);
       }
     };
 
     fetchHealthMetrics();
-  }, []);
+  }, [patient]);
 
   // Summary cards data with dynamic values
   const summaryCards = [

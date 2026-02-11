@@ -13,7 +13,11 @@ import {
 } from "lucide-react";
 import { API_BASE_URL } from "@/services/api";
 
+
+import { useAuth } from "@/contexts/AuthContext";
+
 const Reports = () => {
+  const { patient } = useAuth();
   const [reports, setReports] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedReport, setExpandedReport] = useState(null);
@@ -22,14 +26,17 @@ const Reports = () => {
 
   useEffect(() => {
     const fetchReports = async () => {
-      let nic = localStorage.getItem("NIC");
-      if (nic) nic = nic.replace(/^"|"$/g, "");
+      const nic = patient?.nic;
 
       if (!nic) {
-        setError("NIC not found. Please log in again.");
+        // Only show error if we've determined there is no NIC but we expected one
+        // Or just clear the reports and stop loading
+        setReports([]);
         setLoading(false);
         return;
       }
+
+      setLoading(true);
 
       try {
         // 1️⃣ Fetch reports list from Database (Much Faster)
@@ -58,6 +65,7 @@ const Reports = () => {
         }));
 
         setReports(initialReports);
+        setError(null);
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : "Unable to load reports");
@@ -67,7 +75,7 @@ const Reports = () => {
     };
 
     fetchReports();
-  }, []);
+  }, [patient]);
 
   const toggleExpand = async (id) => {
     // 1Toggle Expansion
@@ -84,8 +92,8 @@ const Reports = () => {
     if (report.aiSummary && report.biomarkers) return; // Already loaded
 
     try {
-      let nic = localStorage.getItem("NIC");
-      if (nic) nic = nic.replace(/^"|"$/g, "");
+      const nic = patient?.nic;
+      if (!nic) return;
 
       const detailRes = await fetch(
         `${API_BASE_URL}/ocr/report/${nic}/${report.fileId}/normalized`
@@ -164,94 +172,108 @@ const Reports = () => {
       </div>
 
       <div className="space-y-4">
-        {reports
-          .filter(
-            (r) =>
-              r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              r.date.includes(searchQuery) ||
-              r.fileId.includes(searchQuery)
-          )
-          .map((report) => (
-            <Card key={report.id} className="shadow-card border-0">
-              <CardContent className="p-0">
-                <div
-                  className="p-4 flex justify-between cursor-pointer hover:bg-muted/30"
-                  onClick={() => toggleExpand(report.id)}
-                >
-                  <div className="flex gap-4">
-                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                      <FileText className="h-5 w-5 text-primary" />
+        {reports.length > 0 ? (
+          reports
+            .filter(
+              (r) =>
+                r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                r.date.includes(searchQuery) ||
+                r.fileId.includes(searchQuery)
+            )
+            .map((report) => (
+              <Card key={report.id} className="shadow-card border-0">
+                <CardContent className="p-0">
+                  <div
+                    className="p-4 flex justify-between cursor-pointer hover:bg-muted/30"
+                    onClick={() => toggleExpand(report.id)}
+                  >
+                    <div className="flex gap-4">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{report.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {report.lab} • {report.date}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold">{report.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {report.lab} • {report.date}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-xs px-3 py-1 rounded-full border ${getStatusStyle(
-                        report.status
-                      )}`}
-                    >
-                      {report.status}
-                    </span>
-                    {expandedReport === report.id ? (
-                      <ChevronUp />
-                    ) : (
-                      <ChevronDown />
-                    )}
-                  </div>
-                </div>
-
-                {expandedReport === report.id && (
-                  <div className="px-4 pb-4 border-t">
-                    <div className="pt-4 space-y-4">
-                      {!report.aiSummary ? (
-                        <div className="flex justify-center items-center py-4">
-                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                          <span className="ml-2 text-sm text-muted-foreground">Loading details...</span>
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-xs px-3 py-1 rounded-full border ${getStatusStyle(
+                          report.status
+                        )}`}
+                      >
+                        {report.status}
+                      </span>
+                      {expandedReport === report.id ? (
+                        <ChevronUp />
                       ) : (
-                        <>
-                          <div className="flex gap-4">
-                            {report.values.map((val, idx) => (
-                              <div
-                                key={idx}
-                                className="flex-1 p-3 rounded-xl bg-secondary/50"
-                              >
-                                <p className="text-xs text-muted-foreground">
-                                  {val.name}
-                                </p>
-                                <p className="text-lg font-bold">{val.value}</p>
-                              </div>
-                            ))}
-                          </div>
-
-                          <p className="text-sm bg-muted/30 p-3 rounded-xl">
-                            {report.aiSummary}
-                          </p>
-
-                          <div className="flex gap-3">
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Eye className="h-4 w-4" />
-                              View Full Report
-                            </Button>
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Download className="h-4 w-4" />
-                              Download
-                            </Button>
-                          </div>
-                        </>
+                        <ChevronDown />
                       )}
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+
+                  {expandedReport === report.id && (
+                    <div className="px-4 pb-4 border-t">
+                      <div className="pt-4 space-y-4">
+                        {!report.aiSummary ? (
+                          <div className="flex justify-center items-center py-4">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                            <span className="ml-2 text-sm text-muted-foreground">Loading details...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex gap-4">
+                              {report.values.map((val, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex-1 p-3 rounded-xl bg-secondary/50"
+                                >
+                                  <p className="text-xs text-muted-foreground">
+                                    {val.name}
+                                  </p>
+                                  <p className="text-lg font-bold">{val.value}</p>
+                                </div>
+                              ))}
+                            </div>
+
+                            <p className="text-sm bg-muted/30 p-3 rounded-xl">
+                              {report.aiSummary}
+                            </p>
+
+                            <div className="flex gap-3">
+                              <Button variant="outline" size="sm" className="gap-2">
+                                <Eye className="h-4 w-4" />
+                                View Full Report
+                              </Button>
+                              <Button variant="outline" size="sm" className="gap-2">
+                                <Download className="h-4 w-4" />
+                                Download
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+        ) : (
+          !loading && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold">No reports found</h3>
+              <p className="text-muted-foreground mt-2">
+                Upload your first medical report to see it here.
+              </p>
+            </div>
+          )
+        )}
       </div>
     </div>
   );
