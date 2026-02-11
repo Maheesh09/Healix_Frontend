@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { API_BASE_URL } from "@/services/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,9 @@ import { PageTransition } from "@/components/motion/MotionWrappers";
 
 type UploadStatus = "idle" | "uploading" | "success" | "error";
 
+
 const UploadPage = () => {
+  const { patient } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,10 +68,8 @@ const UploadPage = () => {
   };
 
   const handleUpload = async () => {
-    var NIC = localStorage.getItem("NIC");
-    if (NIC) {
-      NIC = NIC.replace(/^"|"$/g, ""); // removes quotes
-    }
+    const NIC = patient?.nic;
+
     if (!selectedFile) return;
 
     if (!NIC) {
