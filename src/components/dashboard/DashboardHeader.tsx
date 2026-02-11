@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HealixLogo from "@/components/HealixLogo";
@@ -16,6 +17,12 @@ import {
   Settings,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sheet,
   SheetContent,
@@ -42,6 +49,26 @@ const bottomItems = [
 
 const DashboardHeader = () => {
   const location = useLocation();
+  const { patient } = useAuth();
+
+  const userInitial = patient?.full_name
+    ? patient.full_name.charAt(0).toUpperCase()
+    : 'U';
+
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "Report Ready", desc: "Your blood test report is ready", time: "2m ago", read: false },
+    { id: 2, title: "Appointment", desc: "Dr. Smith confirmed for tomorrow", time: "1h ago", read: false },
+    { id: 3, title: "Welcome", desc: "Welcome to Healix!", time: "1d ago", read: false }
+  ]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      // Mark all as read when opening the panel
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    }
+  };
 
   return (
     <motion.header
@@ -87,8 +114,8 @@ const DashboardHeader = () => {
                             key={item.href}
                             to={item.href}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
-                                ? "bg-sidebar-accent text-sidebar-primary"
-                                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                              ? "bg-sidebar-accent text-sidebar-primary"
+                              : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                               }`}
                           >
                             <item.icon
@@ -110,8 +137,8 @@ const DashboardHeader = () => {
                             key={item.href}
                             to={item.href}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
-                                ? "bg-sidebar-accent text-sidebar-primary"
-                                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                              ? "bg-sidebar-accent text-sidebar-primary"
+                              : "text-sidebar-foreground hover:bg-sidebar-accent/50"
                               }`}
                           >
                             <item.icon
@@ -188,14 +215,66 @@ const DashboardHeader = () => {
           </motion.div>
 
           {/* Notification bell */}
-          <motion.button
-            className="relative p-2 hover:bg-muted rounded-full transition-colors duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Bell className="h-5 w-5 text-muted-foreground" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-          </motion.button>
+          {/* Notification bell */}
+          <Popover onOpenChange={handleOpenChange}>
+            <PopoverTrigger asChild>
+              <motion.button
+                className="relative p-2 hover:bg-muted rounded-full transition-colors duration-300 outline-none"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full animate-pulse" />
+                )}
+              </motion.button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-0 shadow-xl border-border/50 bg-background/95 backdrop-blur-md">
+              <div className="flex items-center justify-between px-4 py-3 border-b">
+                <h4 className="font-semibold text-sm">Notifications</h4>
+                {unreadCount > 0 ? (
+                  <span className="text-xs text-primary font-medium">{unreadCount} New</span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Caught up</span>
+                )}
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {notifications.length > 0 ? (
+                  notifications.map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-4 border-b last:border-0 cursor-pointer transition-colors ${notif.read ? 'bg-background hover:bg-muted/50' : 'bg-primary/5 hover:bg-primary/10'
+                        }`}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <p className={`text-sm leading-none ${notif.read ? 'font-medium' : 'font-bold text-primary'}`}>
+                          {notif.title}
+                        </p>
+                        <span className="text-[10px] text-muted-foreground">{notif.time}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-snug mt-1">
+                        {notif.desc}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center text-muted-foreground">
+                    <p className="text-sm">No notifications</p>
+                  </div>
+                )}
+              </div>
+              <div className="p-2 border-t bg-muted/20">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full h-8 text-xs text-muted-foreground hover:text-primary"
+                  onClick={() => setNotifications([])}
+                >
+                  Clear all
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* User avatar */}
           <Link to="/profile">
@@ -205,7 +284,7 @@ const DashboardHeader = () => {
               whileTap={{ scale: 0.95 }}
             >
               <span className="text-xs sm:text-sm font-semibold text-primary">
-                S
+                {userInitial}
               </span>
             </motion.div>
           </Link>
