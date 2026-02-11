@@ -32,12 +32,14 @@ export interface LoginData {
 
 export interface CareCircleMember {
     id: string;
+    patient_id: string;
     name: string;
     email: string;
     created_at: string;
 }
 
 export interface CareCircleMemberCreate {
+    patient_id: string;
     name: string;
     email: string;
 }
@@ -244,9 +246,13 @@ class ApiService {
     /**
      * Get all care circle members
      */
-    async getCareCircleMembers(): Promise<ApiResponse<CareCircleMember[]>> {
+    async getCareCircleMembers(patientId?: string): Promise<ApiResponse<CareCircleMember[]>> {
         try {
-            const response = await fetch(`${this.baseUrl}/care-circle/members`, {
+            const url = patientId
+                ? `${this.baseUrl}/care-circle/members?patient_id=${patientId}`
+                : `${this.baseUrl}/care-circle/members`;
+
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
