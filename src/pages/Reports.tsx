@@ -60,7 +60,7 @@ const Reports = () => {
         setReports(initialReports);
       } catch (err) {
         console.error(err);
-        setError("Unable to load reports");
+        setError(err instanceof Error ? err.message : "Unable to load reports");
       } finally {
         setLoading(false);
       }

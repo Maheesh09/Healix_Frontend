@@ -109,13 +109,14 @@ const UploadPage = () => {
     } catch (error) {
       console.error("Upload error:", error);
       setUploadStatus("error");
-      setUploadMessage("Upload failed. Please try again.");
+      // Show the actual error message from backend if available
+      setUploadMessage(error instanceof Error ? error.message : "Upload failed. Please try again.");
 
-      // Auto-reset after 3 seconds
+      // Auto-reset after 5 seconds to give time to read
       setTimeout(() => {
         setUploadStatus("idle");
         setUploadMessage("");
-      }, 3000);
+      }, 5000);
     } finally {
       setLoading(false); // stop loading
     }
