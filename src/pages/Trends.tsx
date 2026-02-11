@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,103 +21,35 @@ import { Lightbulb, TrendingDown, AlertCircle, TrendingUp, Plus } from "lucide-r
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { predictNextValue } from "@/lib/utils";
 import { format, subDays, subMonths, subYears, parseISO } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { API_BASE_URL } from "@/services/api";
 
-// Initial Mock data with full dates for filtering flexibility
-// Using a fixed recent date for reproducible output relative to "now"
-const today = new Date();
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
-
-const initialGlucose = [
-  { date: "2023-07-15", value: 105 },
-  { date: "2023-08-15", value: 102 },
-  { date: "2023-09-15", value: 98 },
-  { date: "2023-10-15", value: 96 },
-  { date: "2023-11-15", value: 95 },
-  { date: "2023-12-15", value: 98 },
-].map(d => ({ ...d, date: formatDate(subMonths(today, 6 - ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].indexOf(d.date.split('-')[1]))) })); // Approximate for demo
-
-// Resetting strict mock dates to rely on relative calc for better UX
-const generateMockData = () => {
-  const d = new Date();
-  const data = [];
-  for (let i = 5; i >= 0; i--) {
-    const date = subMonths(d, i);
-    data.push({
-      date: formatDate(date),
-      value: 100 + Math.floor(Math.random() * 10) - 5
-    });
-  }
-  return data;
-};
-
-const generateBPMockData = () => {
-  const d = new Date();
-  const data = [];
-  for (let i = 5; i >= 0; i--) {
-    const date = subMonths(d, i);
-    data.push({
-      date: formatDate(date),
-      systolic: 120 + Math.floor(Math.random() * 10),
-      diastolic: 80 + Math.floor(Math.random() * 5)
-    });
-  }
-  return data;
-};
-
-const initialCholesterol = generateMockData().map(d => ({ ...d, value: 180 + Math.floor(Math.random() * 20) }));
-const initialGlucoseData = generateMockData().map(d => ({ ...d, value: 95 + Math.floor(Math.random() * 10) }));
-const initialBP = generateBPMockData();
-
 
 const biomarkerTabs = ["Glucose", "Cholesterol", "Blood Pressure"];
 const timeRanges = ["Days", "Months", "Years"];
 
-// Insights (static for MVP)
-const insights = [
-  {
-    icon: AlertCircle,
-    title: "Blood Pressure Trending Up",
-    description: "Your systolic blood pressure has increased by 10 mmHg over the past 6 months. Consider lifestyle modifications.",
-    date: "2025-12-28",
-    color: "bg-warning/10 border-warning/20",
-    iconColor: "text-warning",
-  },
-  {
-    icon: TrendingDown,
-    title: "Cholesterol Improving",
-    description: "Great progress! Your total cholesterol has decreased by 20 mg/dL since July.",
-    date: "2025-12-20",
-    color: "bg-success/10 border-success/20",
-    iconColor: "text-success",
-  },
-];
+// Insights (Dynamic based on data would be ideal, initially empty)
+const insights: any[] = [];
 
 // -----------------------
 // FRONTEND TREND HELPER
 // -----------------------
-function calculateTrend(data) {
-  if (!data || data.length === 0) return "NO_DATA";
-  if (data.length === 1) return "BASELINE";
-
-  const latest = data[0].value;
-  const previous = data[1].value;
-
-  if (latest > previous) return "UP";
-  if (latest < previous) return "DOWN";
-  return "STABLE";
-}
 
 // -----------------------
 // MAIN COMPONENT
 // -----------------------
 const Trends = () => {
+  const { patient } = useAuth();
   const [activeBiomarker, setActiveBiomarker] = useState("Glucose");
   const [activeTimeRange, setActiveTimeRange] = useState("Months");
 
   // State for data records
-  const [glucoseRecords, setGlucoseRecords] = useState(initialGlucoseData);
-  const [cholesterolRecords, setCholesterolRecords] = useState(initialCholesterol);
-  const [bpRecords, setBpRecords] = useState(initialBP);
+  const [glucoseRecords, setGlucoseRecords] = useState<any[]>([]);
+  const [cholesterolRecords, setCholesterolRecords] = useState<any[]>([]);
+  const [bpRecords, setBpRecords] = useState<any[]>([]);
+  const [availableBiomarkers, setAvailableBiomarkers] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // State for new entry form
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -126,21 +58,155 @@ const Trends = () => {
   const [newValue1, setNewValue1] = useState("");
   const [newValue2, setNewValue2] = useState("");
 
-  const handleAddEntry = () => {
+  const fetchTrendData = async () => {
+    if (!patient?.id) return;
+    setIsLoading(true);
+    try {
+      // 1. Get available names
+      const namesRes = await fetch(`${API_BASE_URL}/trends/names?patient_id=${patient.id}`);
+      let names: string[] = [];
+      if (namesRes.ok) {
+        names = await namesRes.json();
+        setAvailableBiomarkers(names);
+      } else {
+        const errText = await namesRes.text().catch(() => "");
+        console.error("Failed to load biomarker names:", namesRes.status, errText);
+      }
+
+      const findName = (keywords: string[]) => names.find(n => keywords.some(k => n.toLowerCase().includes(k.toLowerCase())));
+
+      // 2. Fetch Glucose
+      const gluName = findName(["Glucose", "Sugar", "FBS", "Fasting Plasma Glucose"]);
+      if (gluName) {
+         const res = await fetch(`${API_BASE_URL}/trends/data?patient_id=${patient.id}&name=${encodeURIComponent(gluName)}`);
+         if (res.ok) {
+           const data = await res.json();
+           setGlucoseRecords(data.data_points || []);
+         }
+      } else {
+        setGlucoseRecords([]);
+      }
+
+      // 3. Fetch Cholesterol
+      const cholName = findName(["Total Cholesterol", "Cholesterol"]);
+      if (cholName) {
+         const res = await fetch(`${API_BASE_URL}/trends/data?patient_id=${patient.id}&name=${encodeURIComponent(cholName)}`);
+         if (res.ok) {
+           const data = await res.json();
+           setCholesterolRecords(data.data_points || []);
+         }
+      } else {
+        setCholesterolRecords([]);
+      }
+
+      // 4. Fetch BP (Systolic & Diastolic)
+      const sysName = findName(["Systolic", "Sys BP"]);
+      const diaName = findName(["Diastolic", "Dia BP"]);
+
+      if (sysName || diaName) {
+          const sysN = sysName || "Systolic BP";
+          const diaN = diaName || "Diastolic BP";
+          const [sRes, dRes] = await Promise.all([
+              fetch(`${API_BASE_URL}/trends/data?patient_id=${patient.id}&name=${encodeURIComponent(sysN)}`),
+              fetch(`${API_BASE_URL}/trends/data?patient_id=${patient.id}&name=${encodeURIComponent(diaN)}`)
+          ]);
+
+          if (sRes.ok && dRes.ok) {
+              const sData = (await sRes.json()).data_points || [];
+              const dData = (await dRes.json()).data_points || [];
+
+              const bpMap = new Map();
+              sData.forEach((d: any) => {
+                  const date = d.date.split('T')[0];
+                  if (!bpMap.has(date)) bpMap.set(date, { date });
+                  bpMap.get(date).systolic = d.value;
+              });
+              dData.forEach((d: any) => {
+                  const date = d.date.split('T')[0];
+                  if (!bpMap.has(date)) bpMap.set(date, { date });
+                  bpMap.get(date).diastolic = d.value;
+              });
+
+              const merged = Array.from(bpMap.values())
+                  .filter((d: any) => d.systolic !== undefined && d.diastolic !== undefined)
+                  .sort((a: any, b: any) => a.date.localeCompare(b.date));
+              
+              setBpRecords(merged);
+          }
+      } else {
+        setBpRecords([]);
+      }
+
+    } catch (error) {
+      console.error("Error fetching trend data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTrendData();
+  }, [patient?.id]);
+
+  // Map frontend tab names to backend metric_names
+  const metricNameMap: Record<string, string> = {
+    "Glucose": "Fasting Plasma Glucose",
+    "Cholesterol": "Total Cholesterol",
+    "Blood Pressure": "" // handled as two entries: Systolic BP + Diastolic BP
+  };
+
+  const saveHealthMetric = async (metricName: string, value: number, date: string) => {
+    if (!patient?.id) return;
+    try {
+      // Ensure a stable ISO datetime (UTC midnight for the selected date)
+      const recordedAtIso = `${date}T00:00:00.000Z`;
+      const res = await fetch(`${API_BASE_URL}/health/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: patient.id,
+          metric_name: metricName,
+          value: Number(value),
+          recorded_at: recordedAtIso,
+        }),
+      });
+
+      // Parse response for better error visibility
+      const payload = await res.json().catch(async () => ({ detail: await res.text().catch(() => "") }));
+      if (!res.ok) {
+        console.error("Save metric failed:", res.status, payload?.detail ?? payload);
+        throw new Error(typeof payload?.detail === "string" ? payload.detail : "Failed to save metric");
+      }
+      return payload;
+    } catch (err) {
+      console.error("Failed to save metric:", err);
+      throw err;
+    }
+  };
+
+  const handleAddEntry = async () => {
     const date = newEntryDate;
     const val1 = parseFloat(newValue1);
     const val2 = parseFloat(newValue2);
 
-    if (isNaN(val1)) return;
+    if (isNaN(val1) || !patient?.id) return;
 
     if (newEntryType === "Glucose") {
-      setGlucoseRecords(prev => [...prev, { date, value: val1 }].sort((a, b) => a.date.localeCompare(b.date)));
+      await saveHealthMetric("Fasting Plasma Glucose", val1, date);
     } else if (newEntryType === "Cholesterol") {
-      setCholesterolRecords(prev => [...prev, { date, value: val1 }].sort((a, b) => a.date.localeCompare(b.date)));
+      await saveHealthMetric("Total Cholesterol", val1, date);
     } else if (newEntryType === "Blood Pressure") {
       if (isNaN(val2)) return;
-      setBpRecords(prev => [...prev, { date, systolic: val1, diastolic: val2 }].sort((a, b) => a.date.localeCompare(b.date)));
+      await saveHealthMetric("Systolic BP", val1, date);
+      await saveHealthMetric("Diastolic BP", val2, date);
     }
+
+    // Re-fetch data from backend so chart updates with persisted data
+    await fetchTrendData();
+
     setIsDialogOpen(false);
     setNewValue1("");
     setNewValue2("");
@@ -234,7 +300,7 @@ const Trends = () => {
       else if (activeTimeRange === "Months") label = format(dateObj, "MMM");
       else label = format(dateObj, "yyyy");
 
-      const row: any = { month: label, fullDate: d.date }; // Keep full date for key
+      const row: any = { month: label, fullDate: d.date, timestamp: dateObj.getTime() }; // Keep full date for key
       processedLines.forEach(line => {
         // @ts-ignore
         row[line.key] = d[line.key];
@@ -246,11 +312,22 @@ const Trends = () => {
     if (dataWithPrediction.length > 0) {
       const lastDate = new Date(dataWithPrediction[dataWithPrediction.length - 1].fullDate);
       let nextLabel = "Future";
-      if (activeTimeRange === "Days") nextLabel = format(subDays(lastDate, -1), "MMM dd");
-      else if (activeTimeRange === "Months") nextLabel = format(subMonths(lastDate, -1), "MMM");
-      else nextLabel = format(subYears(lastDate, -1), "yyyy");
+      let nextTimestamp = 0;
+      if (activeTimeRange === "Days") {
+        const nextD = subDays(lastDate, -1);
+        nextLabel = format(nextD, "MMM dd");
+        nextTimestamp = nextD.getTime();
+      } else if (activeTimeRange === "Months") {
+         const nextD = subMonths(lastDate, -1);
+         nextLabel = format(nextD, "MMM");
+         nextTimestamp = nextD.getTime();
+      } else {
+         const nextD = subYears(lastDate, -1);
+         nextLabel = format(nextD, "yyyy");
+         nextTimestamp = nextD.getTime();
+      }
 
-      const predRow: any = { month: nextLabel + " (Est)" };
+      const predRow: any = { month: nextLabel + " (Est)", timestamp: nextTimestamp };
       processedLines.forEach(line => {
         predRow[`${line.key}_predicted`] = Math.round(line.prediction);
       });
@@ -417,7 +494,15 @@ const Trends = () => {
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
-                  dataKey="month"
+                  dataKey="timestamp"
+                  type="number"
+                  domain={['dataMin', 'dataMax']}
+                  tickFormatter={(unixTime) => {
+                    const date = new Date(unixTime);
+                    if (activeTimeRange === "Days") return format(date, "MMM dd");
+                    if (activeTimeRange === "Months") return format(date, "MMM");
+                    return format(date, "yyyy");
+                  }}
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                 />
