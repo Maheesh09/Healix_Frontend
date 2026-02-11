@@ -14,12 +14,11 @@ import { motion } from "framer-motion";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: HeartPulse, label: "Body Systems", href: "/body-systems" },
   { icon: FileText, label: "Reports", href: "/reports" },
   { icon: TrendingUp, label: "Trends", href: "/trends" },
-  { icon: Pill, label: "Medications", href: "/medications" },
   { icon: Upload, label: "Upload", href: "/upload" },
   { icon: Users, label: "Care Circle", href: "/care-circle" },
+  { icon: Pill, label: "Medications", href: "/medications" },
 ];
 
 const bottomItems = [

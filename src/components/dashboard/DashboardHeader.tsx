@@ -27,7 +27,7 @@ import {
 // Menu items copied from DashboardSidebar to ensure consistency
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: HeartPulse, label: "Body Systems", href: "/body-systems" },
+
   { icon: FileText, label: "Reports", href: "/reports" },
   { icon: TrendingUp, label: "Trends", href: "/trends" },
   { icon: Pill, label: "Medications", href: "/medications" },
@@ -86,11 +86,10 @@ const DashboardHeader = () => {
                           <Link
                             key={item.href}
                             to={item.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
-                              isActive
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
                                 ? "bg-sidebar-accent text-sidebar-primary"
                                 : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                            }`}
+                              }`}
                           >
                             <item.icon
                               className={`h-5 w-5 ${isActive ? "scale-110" : ""}`}
@@ -110,11 +109,10 @@ const DashboardHeader = () => {
                           <Link
                             key={item.href}
                             to={item.href}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${
-                              isActive
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-300 ${isActive
                                 ? "bg-sidebar-accent text-sidebar-primary"
                                 : "text-sidebar-foreground hover:bg-sidebar-accent/50"
-                            }`}
+                              }`}
                           >
                             <item.icon
                               className={`h-5 w-5 ${isActive ? "scale-110" : ""}`}
