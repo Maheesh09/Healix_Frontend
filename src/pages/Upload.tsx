@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { API_BASE_URL } from "@/services/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,6 +71,13 @@ const UploadPage = () => {
     }
     if (!selectedFile) return;
 
+    if (!NIC) {
+      setUploadStatus("error");
+      setUploadMessage("User identification (NIC) not found. Please log in again.");
+      setLoading(false);
+      return;
+    }
+
     setLoading(true); // start loading
     setUploadStatus("uploading");
     try {
@@ -77,7 +85,7 @@ const UploadPage = () => {
       formData.append("file", selectedFile);
 
       const response = await fetch(
-        `https://web-production-ecd63.up.railway.app/api/v1/ocr/upload?nic=${NIC}`,
+        `${API_BASE_URL}/ocr/upload?nic=${NIC}`,
         { method: "POST", body: formData }
       );
 

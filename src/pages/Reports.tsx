@@ -11,6 +11,7 @@ import {
   Eye,
   Download,
 } from "lucide-react";
+import { API_BASE_URL } from "@/services/api";
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -33,7 +34,7 @@ const Reports = () => {
       try {
         // 1️⃣ Fetch reports list from Database (Much Faster)
         const res = await fetch(
-          `https://web-production-ecd63.up.railway.app/api/v1/ocr/reports/nic/${nic}?source=database`
+          `${API_BASE_URL}/ocr/reports/nic/${nic}?source=database`
         );
 
         if (!res.ok) throw new Error("Failed to fetch reports list");
@@ -87,7 +88,7 @@ const Reports = () => {
       if (nic) nic = nic.replace(/^"|"$/g, "");
 
       const detailRes = await fetch(
-        `https://web-production-ecd63.up.railway.app/api/v1/ocr/report/${nic}/${report.fileId}/normalized`
+        `${API_BASE_URL}/ocr/report/${nic}/${report.fileId}/normalized`
       );
 
       if (detailRes.ok) {

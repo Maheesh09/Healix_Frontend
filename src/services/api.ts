@@ -1,5 +1,5 @@
 // API Configuration and Base Setup
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://web-production-ecd63.up.railway.app/api/v1';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://web-production-ecd63.up.railway.app/api/v1';
 
 export interface ApiResponse<T = any> {
     success: boolean;
