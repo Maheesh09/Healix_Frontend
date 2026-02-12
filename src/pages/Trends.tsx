@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,72 +21,30 @@ import { Lightbulb, TrendingDown, AlertCircle, TrendingUp, Plus } from "lucide-r
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { predictNextValue } from "@/lib/utils";
 import { format, subDays, subMonths, subYears, parseISO } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { API_BASE_URL } from "@/services/api";
 
-// Initial Mock data with full dates for filtering flexibility
-// Using a fixed recent date for reproducible output relative to "now"
 const today = new Date();
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
-const initialGlucose = [
-  { date: "2023-07-15", value: 105 },
-  { date: "2023-08-15", value: 102 },
-  { date: "2023-09-15", value: 98 },
-  { date: "2023-10-15", value: 96 },
-  { date: "2023-11-15", value: 95 },
-  { date: "2023-12-15", value: 98 },
-].map(d => ({ ...d, date: formatDate(subMonths(today, 6 - ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].indexOf(d.date.split('-')[1]))) })); // Approximate for demo
-
-// Resetting strict mock dates to rely on relative calc for better UX
-const generateMockData = () => {
-  const d = new Date();
-  const data = [];
-  for (let i = 5; i >= 0; i--) {
-    const date = subMonths(d, i);
-    data.push({
-      date: formatDate(date),
-      value: 100 + Math.floor(Math.random() * 10) - 5
-    });
-  }
-  return data;
-};
-
-const generateBPMockData = () => {
-  const d = new Date();
-  const data = [];
-  for (let i = 5; i >= 0; i--) {
-    const date = subMonths(d, i);
-    data.push({
-      date: formatDate(date),
-      systolic: 120 + Math.floor(Math.random() * 10),
-      diastolic: 80 + Math.floor(Math.random() * 5)
-    });
-  }
-  return data;
-};
-
-const initialCholesterol = generateMockData().map(d => ({ ...d, value: 180 + Math.floor(Math.random() * 20) }));
-const initialGlucoseData = generateMockData().map(d => ({ ...d, value: 95 + Math.floor(Math.random() * 10) }));
-const initialBP = generateBPMockData();
-
-
-const biomarkerTabs = ["Glucose", "Cholesterol", "Blood Pressure"];
+const biomarkerTabs = ["Glucose", "Cholesterol"];
 const timeRanges = ["Days", "Months", "Years"];
 
 // Insights (static for MVP)
 const insights = [
   {
     icon: AlertCircle,
-    title: "Blood Pressure Trending Up",
-    description: "Your systolic blood pressure has increased by 10 mmHg over the past 6 months. Consider lifestyle modifications.",
-    date: "2025-12-28",
+    title: "Health Alert",
+    description: "Your recent readings show some fluctuations. Keep monitoring.",
+    date: formatDate(today),
     color: "bg-warning/10 border-warning/20",
     iconColor: "text-warning",
   },
   {
     icon: TrendingDown,
-    title: "Cholesterol Improving",
-    description: "Great progress! Your total cholesterol has decreased by 20 mg/dL since July.",
-    date: "2025-12-20",
+    title: "Positive Trend",
+    description: "Great job! Your health metrics are trending in the right direction.",
+    date: formatDate(subDays(today, 5)),
     color: "bg-success/10 border-success/20",
     iconColor: "text-success",
   },
@@ -95,7 +53,7 @@ const insights = [
 // -----------------------
 // FRONTEND TREND HELPER
 // -----------------------
-function calculateTrend(data) {
+function calculateTrend(data: { date: string; value: number }[]) {
   if (!data || data.length === 0) return "NO_DATA";
   if (data.length === 1) return "BASELINE";
 
@@ -111,25 +69,104 @@ function calculateTrend(data) {
 // MAIN COMPONENT
 // -----------------------
 const Trends = () => {
+  const { patient } = useAuth();
   const [activeBiomarker, setActiveBiomarker] = useState("Glucose");
   const [activeTimeRange, setActiveTimeRange] = useState("Months");
 
   // State for data records
-  const [glucoseRecords, setGlucoseRecords] = useState(initialGlucoseData);
-  const [cholesterolRecords, setCholesterolRecords] = useState(initialCholesterol);
-  const [bpRecords, setBpRecords] = useState(initialBP);
+  const [glucoseRecords, setGlucoseRecords] = useState<{ date: string; value: number }[]>([]);
+  const [cholesterolRecords, setCholesterolRecords] = useState<{ date: string; value: number }[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // State for new entry form
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newEntryDate, setNewEntryDate] = useState(formatDate(new Date()));
   const [newEntryType, setNewEntryType] = useState("Glucose");
   const [newValue1, setNewValue1] = useState("");
-  const [newValue2, setNewValue2] = useState("");
+
+  useEffect(() => {
+    const fetchTrendsData = async () => {
+      if (!patient?.nic) return;
+
+      setLoading(true);
+      try {
+        // Fetch all reports
+        const res = await fetch(`${API_BASE_URL}/ocr/reports/nic/${patient.nic}?source=database`);
+        if (!res.ok) throw new Error("Failed to fetch reports");
+        const listData = await res.json();
+
+        // Fetch details for each report to extract biomarkers
+        // Note: For a production app with many reports, this should be optimized or paginated
+        const detailsPromises = listData.reports.map((r: any) =>
+          fetch(`${API_BASE_URL}/ocr/report/${patient.nic}/${r.file_id}/normalized`)
+            .then(async res => {
+              if (res.ok) {
+                const data = await res.json();
+                // Attach the created_at from the list item to the result
+                return { ...data, created_at: r.created_at };
+              }
+              return null;
+            })
+            .catch(() => null)
+        );
+
+        const details = await Promise.all(detailsPromises);
+
+        const newGlucose: { date: string; value: number }[] = [];
+        const newCholesterol: { date: string; value: number }[] = [];
+
+        details.forEach((d: any) => {
+          if (!d || !d.data || !d.data.biomarkers) return;
+
+          // Determine date: use created_at (upload date), fallback to today
+          let dateStr = d.created_at || new Date().toISOString();
+          const date = dateStr.split('T')[0];
+
+          const biomarkers = d.data.biomarkers;
+          let items: any[] = [];
+          if (Array.isArray(biomarkers)) items = biomarkers;
+          else if (typeof biomarkers === 'object') items = Object.values(biomarkers);
+
+          // Extract Glucose
+          const glucoseItem = items.find((b: any) => {
+            const name = b.name?.toLowerCase() || "";
+            return name.includes("glucose") || name.includes("fbs") || name.includes("fasting");
+          });
+
+          if (glucoseItem && !isNaN(parseFloat(glucoseItem.value))) {
+            newGlucose.push({ date, value: parseFloat(glucoseItem.value) });
+          }
+
+          // Extract Cholesterol
+          const cholesterolItem = items.find((b: any) => {
+            const name = b.name?.toLowerCase() || "";
+            return name.includes("total cholesterol") || (name.includes("cholesterol") && !name.includes("hdl") && !name.includes("ldl"));
+          });
+
+          if (cholesterolItem && !isNaN(parseFloat(cholesterolItem.value))) {
+            newCholesterol.push({ date, value: parseFloat(cholesterolItem.value) });
+          }
+        });
+
+        // Sort by date ascending for the chart
+        newGlucose.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        newCholesterol.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        setGlucoseRecords(newGlucose);
+        setCholesterolRecords(newCholesterol);
+      } catch (err) {
+        console.error("Error fetching trend data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrendsData();
+  }, [patient?.nic]);
 
   const handleAddEntry = () => {
     const date = newEntryDate;
     const val1 = parseFloat(newValue1);
-    const val2 = parseFloat(newValue2);
 
     if (isNaN(val1)) return;
 
@@ -137,13 +174,10 @@ const Trends = () => {
       setGlucoseRecords(prev => [...prev, { date, value: val1 }].sort((a, b) => a.date.localeCompare(b.date)));
     } else if (newEntryType === "Cholesterol") {
       setCholesterolRecords(prev => [...prev, { date, value: val1 }].sort((a, b) => a.date.localeCompare(b.date)));
-    } else if (newEntryType === "Blood Pressure") {
-      if (isNaN(val2)) return;
-      setBpRecords(prev => [...prev, { date, systolic: val1, diastolic: val2 }].sort((a, b) => a.date.localeCompare(b.date)));
     }
+
     setIsDialogOpen(false);
     setNewValue1("");
-    setNewValue2("");
   };
 
   const getFilteredData = (records: any[], range: string) => {
@@ -158,30 +192,18 @@ const Trends = () => {
   };
 
   const config = useMemo(() => {
-    let filteredRecs = [];
+    let filteredRecs: any[] = [];
     switch (activeBiomarker) {
       case "Cholesterol":
         filteredRecs = getFilteredData(cholesterolRecords, activeTimeRange);
         return {
           data: filteredRecs,
           unit: "mg/dL",
-          domain: [100, 240],
+          domain: [100, 300], // Adjusted/widened default domain
           lines: [
             { key: "value", name: "Total Cholesterol", color: "hsl(var(--primary))" }
           ],
           refs: [{ y: 200, label: "High" }]
-        };
-      case "Blood Pressure":
-        filteredRecs = getFilteredData(bpRecords, activeTimeRange);
-        return {
-          data: filteredRecs,
-          unit: "mmHg",
-          domain: [60, 160],
-          lines: [
-            { key: "systolic", name: "Systolic", color: "hsl(var(--destructive))" },
-            { key: "diastolic", name: "Diastolic", color: "hsl(var(--primary))" }
-          ],
-          refs: [{ y: 120, label: "Normal Sys" }, { y: 80, label: "Normal Dia" }]
         };
       case "Glucose":
       default:
@@ -189,14 +211,14 @@ const Trends = () => {
         return {
           data: filteredRecs,
           unit: "mg/dL",
-          domain: [60, 140],
+          domain: [60, 200], // Adjusted/widened default domain
           lines: [
             { key: "value", name: "Glucose", color: "hsl(var(--primary))" }
           ],
           refs: [{ y: 100, label: "High" }, { y: 70, label: "Low" }]
         };
     }
-  }, [activeBiomarker, activeTimeRange, glucoseRecords, cholesterolRecords, bpRecords]);
+  }, [activeBiomarker, activeTimeRange, glucoseRecords, cholesterolRecords]);
 
   const { chartData, lastValueDisplay, trendDisplay, isImprovement } = useMemo(() => {
     const rawData = config.data;
@@ -318,13 +340,12 @@ const Trends = () => {
                   <SelectContent>
                     <SelectItem value="Glucose">Glucose</SelectItem>
                     <SelectItem value="Cholesterol">Cholesterol</SelectItem>
-                    <SelectItem value="Blood Pressure">Blood Pressure</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="value1">
-                  {newEntryType === "Blood Pressure" ? "Systolic (mmHg)" : "Value (mg/dL)"}
+                  Value (mg/dL)
                 </Label>
                 <Input
                   id="value1"
@@ -334,18 +355,6 @@ const Trends = () => {
                   onChange={(e) => setNewValue1(e.target.value)}
                 />
               </div>
-              {newEntryType === "Blood Pressure" && (
-                <div className="grid gap-2">
-                  <Label htmlFor="value2">Diastolic (mmHg)</Label>
-                  <Input
-                    id="value2"
-                    type="number"
-                    placeholder="e.g. 80"
-                    value={newValue2}
-                    onChange={(e) => setNewValue2(e.target.value)}
-                  />
-                </div>
-              )}
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
@@ -363,8 +372,8 @@ const Trends = () => {
               key={tab}
               variant={activeBiomarker === tab ? "default" : "outline"}
               className={`rounded-full ${activeBiomarker === tab
-                  ? "bg-primary text-primary-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground"
+                ? "bg-primary text-primary-foreground"
+                : "border-border text-muted-foreground hover:text-foreground"
                 }`}
               onClick={() => setActiveBiomarker(tab)}
             >
@@ -379,8 +388,8 @@ const Trends = () => {
               variant="ghost"
               size="sm"
               className={`rounded-full px-4 ${activeTimeRange === range
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
               onClick={() => setActiveTimeRange(range)}
             >
@@ -401,12 +410,18 @@ const Trends = () => {
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Current</p>
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-foreground">{lastValueDisplay}</span>
-                <span className="text-sm text-muted-foreground">{config.unit}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${isImprovement ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'} flex items-center gap-1`}>
-                  {isImprovement ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
-                  {trendDisplay}%
-                </span>
+                {loading ? (
+                  <span className="text-sm text-muted-foreground">Loading...</span>
+                ) : (
+                  <>
+                    <span className="text-2xl font-bold text-foreground">{lastValueDisplay}</span>
+                    <span className="text-sm text-muted-foreground">{config.unit}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${isImprovement ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'} flex items-center gap-1`}>
+                      {isImprovement ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                      {trendDisplay}%
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -444,31 +459,30 @@ const Trends = () => {
                 ))}
 
                 {config.lines.map((line) => (
-                  <>
-                    {/* Historical Line */}
-                    <Line
-                      key={line.key}
-                      type="monotone"
-                      dataKey={line.key}
-                      name={line.name}
-                      stroke={line.color}
-                      strokeWidth={2}
-                      dot={{ fill: line.color, strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, fill: line.color }}
-                    />
-                    {/* Predicted Line Segment */}
-                    <Line
-                      key={`${line.key}_pred`}
-                      type="monotone"
-                      dataKey={`${line.key}_predicted`}
-                      name={`${line.name} (Predicted)`}
-                      stroke={line.color}
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                      dot={{ fill: "hsl(var(--background))", stroke: line.color, strokeWidth: 2, r: 4 }}
-                      activeDot={false}
-                    />
-                  </>
+                  <Line
+                    key={line.key}
+                    type="monotone"
+                    dataKey={line.key}
+                    name={line.name}
+                    stroke={line.color}
+                    strokeWidth={2}
+                    dot={{ fill: line.color, strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, fill: line.color }}
+                  />
+                ))}
+
+                {config.lines.map((line) => (
+                  <Line
+                    key={`${line.key}_pred`}
+                    type="monotone"
+                    dataKey={`${line.key}_predicted`}
+                    name={`${line.name} (Predicted)`}
+                    stroke={line.color}
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={{ fill: "hsl(var(--background))", stroke: line.color, strokeWidth: 2, r: 4 }}
+                    activeDot={false}
+                  />
                 ))}
               </LineChart>
             </ResponsiveContainer>
