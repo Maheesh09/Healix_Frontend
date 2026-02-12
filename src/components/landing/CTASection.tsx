@@ -5,17 +5,17 @@ import { motion } from "framer-motion";
 
 const CTASection = () => {
   return (
-    <section className="py-24 bg-background relative z-10">
+    <section className="py-6 bg-background relative z-10">
       <div className="container">
         <motion.div
-          className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary via-healix-mint to-info p-8 sm:p-12 lg:p-16 text-center shadow-2xl"
+          className="relative overflow-hidden rounded-[2.5rem] bg-[url('/banner.png')] bg-cover bg-center py-6 px-4 sm:py-8 sm:px-6 lg:py-10 lg:px-8 text-center shadow-2xl"
           initial={{ opacity: 0.9, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          {/* Animated background elements */}
-          <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-black/40 rounded-[2.5rem]" />
 
           <motion.div
             className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl"
@@ -30,19 +30,19 @@ const CTASection = () => {
 
           {/* Floating Glass Icon */}
           <motion.div
-            className="relative mx-auto w-20 h-20 glass-card rounded-2xl flex items-center justify-center mb-8 shadow-lg border-white/30"
-            animate={{ y: [0, -8, 0] }}
+            className="relative mx-auto w-12 h-12 glass-card rounded-xl flex items-center justify-center mb-3 shadow-lg border-white/30"
+            animate={{ y: [0, -5, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Shield className="h-10 w-10 text-white" />
+            <Shield className="h-6 w-6 text-white" />
           </motion.div>
 
-          <h2 className="relative text-3xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+          <h2 className="relative text-2xl lg:text-4xl font-bold text-white mb-3 tracking-tight">
             Take Control of Your <br className="hidden sm:block" />
             Health Data Today
           </h2>
 
-          <p className="relative text-blue-50 text-xl mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="relative text-blue-50 text-base mb-4 max-w-2xl mx-auto font-medium leading-relaxed">
             Join thousands of users who have already simplified their health journey.
             Secure, private, and smart.
           </p>
@@ -55,7 +55,7 @@ const CTASection = () => {
             <Button
               asChild
               size="lg"
-              className="h-16 px-10 rounded-full bg-white text-primary hover:bg-white/90 font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 group"
+              className="h-12 px-8 rounded-full bg-white text-primary hover:bg-white/90 font-bold text-base shadow-xl hover:shadow-2xl transition-all duration-300 group"
             >
               <Link to="/signup">
                 Get Started Free
@@ -65,7 +65,7 @@ const CTASection = () => {
           </motion.div>
 
           {/* Decorative bottom text */}
-          <p className="relative mt-8 text-white/60 text-sm font-medium">
+          <p className="relative mt-3 text-white/60 text-xs font-medium">
             No credit card required · Free plan forever
           </p>
         </motion.div>
