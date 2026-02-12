@@ -13,6 +13,7 @@ import { apiService } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +21,6 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,18 +38,28 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      // Unifying the logic to use the centralized apiService
       const result = await apiService.login({ email, password });
 
       if (result.success && result.data) {
-        // Save patient data and redirect
+        // 1. Update Auth Context
         login(result.data);
+        
+        // 2. Store specific data if needed (Consolidated from your snippets)
+        if (result.data.nic) {
+          localStorage.setItem("NIC", JSON.stringify(result.data.nic));
+        }
+        if (result.data.id) {
+          localStorage.setItem("healix_user_id", result.data.id);
+        }
+
         toast({
           title: "Welcome back!",
           description: result.message || "Login successful",
         });
+
+        // 3. Navigate
         navigate("/dashboard");
-        localStorage.setItem("NIC", JSON.stringify(result.data.nic));
-        console.log("NIC stored in localStorage:", result.data.nic);
       } else {
         toast({
           title: "Login Failed",
@@ -58,6 +68,7 @@ const Login = () => {
         });
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
@@ -157,7 +168,7 @@ const Login = () => {
                       </div>
                     </div>
 
-                    {/* Submit */}
+                    {/* Submit Button - Fixed Logic */}
                     <motion.div whileHover={{ scale: isLoading ? 1 : 1.01 }} whileTap={{ scale: isLoading ? 1 : 0.99 }}>
                       <Button
                         type="submit"

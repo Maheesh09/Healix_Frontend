@@ -63,7 +63,9 @@ const Trends = () => {
     setIsLoading(true);
     try {
       // 1. Get available names
-      const namesRes = await fetch(`${API_BASE_URL}/trends/names?patient_id=${patient.id}`);
+      const namesRes = await fetch(`${API_BASE_URL}/trends/names?${patient.id}`);
+      console.log("namesRes",namesRes);
+      
       let names: string[] = [];
       if (namesRes.ok) {
         names = await namesRes.json();
@@ -362,7 +364,7 @@ const Trends = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Trends & Analytics</h1>
-          <p className="text-muted-foreground">Track how your biomarkers change over time</p>
+          <p className="text-muted-foreground">            Track how your biomarkers change over time          </p>
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
