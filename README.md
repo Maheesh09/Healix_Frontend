@@ -83,6 +83,14 @@ The Dashboard is your central hub:
     *   🟢 **Normal**: Values within standard healthy range.
     *   🟡 **Watch**: Values deviating slightly (e.g., Pre-diabetic ranges).
     *   🔴 **Alert**: Values requiring immediate attention.
+ 
+### 5. Sample Reports
+*    You can find sample reports to upload and test the system in the `docs` folder of the frontend repository:
+    `Healix-frontend/Healix_Frontend/docs/`
+*    Available samples:
+-     **Full Blood Count.pdf** - Test FBC extraction and normalization.
+-     **Glucose.pdf** - Test Fasting Plasma Glucose (FBS) processing.
+-     **Lipid Profile.pdf** - Test Lipid Profile analysis.
 
 ## 🎨 UI & Design Philosophy
 The generic dashboard template has been completely overhauled to offer a **premium, "Grade A" experience**:
