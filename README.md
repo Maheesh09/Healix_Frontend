@@ -2,7 +2,7 @@
 
 A modern, intelligent health monitoring dashboard designed to interpret medical reports and visualize key health metrics. Built with React, TypeScript, and Vite, featuring a premium UI with real-time status analysis.
 
-## 🚀 Overview
+##  Overview
 
 Healix is a comprehensive health platform that allows users to:
 - **Upload Medical Reports**: robust handling of PDF and image-based lab reports.
@@ -12,7 +12,7 @@ Healix is a comprehensive health platform that allows users to:
 
 This frontend connects to a powerful backend utilizing OCR and NLP to normalize unstructured data from diverse lab report formats.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Framework**: [React](https://react.dev/) + [Vite](https://vitejs.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -22,7 +22,7 @@ This frontend connects to a powerful backend utilizing OCR and NLP to normalize 
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Routing**: [React Router](https://reactrouter.com/)
 
-## 🏁 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -40,25 +40,22 @@ This frontend connects to a powerful backend utilizing OCR and NLP to normalize 
     ```bash
     npm install
     ```
+    
 
-3.  **Set up Environment Variables**:
-    Create a `.env` file in the root directory. You need to configure the API base URL and any authentication keys (e.g., Supabase).
-    ```env
-    VITE_API_BASE_URL=http://your-backend-api-url
-    # Add other necessary keys here
-    ```
-
-4.  **Run the development server**:
+3.  **Run the development server**:
     ```bash
     npm run dev
     ```
 
-5.  **Build for Production**:
+4.  **Build for Production**:
     ```bash
     npm run build
     ```
+**Backend hosted on Railway**
+**Database hosted on Supabase**
 
-## 📖 User Guide
+    
+##  User Guide
 
 ### 1. First Time Setup
 *   **Sign Up**: When you first visit Healix, navigate to the **Sign Up** page. Create an account using your email and a secure password.
@@ -75,6 +72,7 @@ The Dashboard is your central hub:
 *   Select your medical report file (PDF or Image).
 *   Click **Upload**. The system will send the file to the backend for OCR processing and data extraction.
 *   *Note: Processing may take a few moments depending on file size/complexity.*
+*   Sample reports are availabe in /docs
 
 ### 4. Viewing Reports
 *   Go to the **Reports** page to see a history of all uploaded documents.
@@ -92,7 +90,7 @@ The Dashboard is your central hub:
 -     **Glucose.pdf** - Test Fasting Plasma Glucose (FBS) processing.
 -     **Lipid Profile.pdf** - Test Lipid Profile analysis.
 
-## 🎨 UI & Design Philosophy
+##  UI & Design Philosophy
 The generic dashboard template has been completely overhauled to offer a **premium, "Grade A" experience**:
 *   **Glassmorphism**: Subtle transparencies and blurs for a modern feel.
 *   **Micro-interactions**: Hover effects on cards and buttons.
