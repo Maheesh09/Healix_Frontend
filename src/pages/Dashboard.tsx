@@ -5,7 +5,8 @@ import {
   Calendar,
   Bell,
   Activity,
-  Droplet
+  Droplet,
+  Loader2
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { PageTransition } from "@/components/motion/MotionWrappers";
@@ -32,7 +33,7 @@ const itemVariants = {
 };
 
 const Dashboard = () => {
-  const { patient } = useAuth();
+  const { patient, isLoading: isAuthLoading } = useAuth();
   const [fbsData, setFbsData] = useState<{ value: string; unit: string; date: string } | null>(null);
   const [cholesterolData, setCholesterolData] = useState<{ value: string; unit: string; date: string } | null>(null);
   const [loadingMetrics, setLoadingMetrics] = useState(true);
@@ -44,6 +45,8 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
+    if (isAuthLoading) return;
+
     const fetchHealthMetrics = async () => {
       // Strictly use the patient from context to ensure user-scoped data
       const nic = patient?.nic;
@@ -214,7 +217,7 @@ const Dashboard = () => {
     };
 
     fetchHealthMetrics();
-  }, [patient]);
+  }, [patient, isAuthLoading]);
 
   // Summary cards data with dynamic values
   const summaryCards = [
@@ -285,7 +288,7 @@ const Dashboard = () => {
                 {greeting}, {patient?.full_name?.split(' ')[0] || 'User'}!
               </h1>
               <p className="mt-2 text-primary-foreground/90 max-w-xl text-base leading-relaxed">
-                Here's your daily health overview. You have {stats.healthAlerts} active alerts.
+                Here's your daily health overview. You have {loadingMetrics ? <Loader2 className="inline h-4 w-4 animate-spin mx-1" /> : stats.healthAlerts} active alerts.
               </p>
             </div>
           </div>
@@ -314,7 +317,13 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{card.label}</p>
-                    <p className="text-xl sm:text-2xl font-bold text-foreground mt-0.5">{card.value}</p>
+                    <div className="mt-0.5 min-h-[32px] flex items-center">
+                      {loadingMetrics ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground/60" />
+                      ) : (
+                        <p className="text-xl sm:text-2xl font-bold text-foreground">{card.value}</p>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -365,7 +374,7 @@ const Dashboard = () => {
                 </div>
 
                 {loadingMetrics ? (
-                  <div className="py-6 flex justify-center"><div className="animate-pulse w-6 h-6 rounded-full bg-muted"></div></div>
+                  <div className="py-6 flex justify-center"><Loader2 className="animate-spin w-6 h-6 text-muted-foreground" /></div>
                 ) : fbsData ? (
                   <div className="space-y-3">
                     <div className="flex items-baseline gap-1.5">
@@ -421,7 +430,7 @@ const Dashboard = () => {
                 </div>
 
                 {loadingMetrics ? (
-                  <div className="py-6 flex justify-center"><div className="animate-pulse w-6 h-6 rounded-full bg-muted"></div></div>
+                  <div className="py-6 flex justify-center"><Loader2 className="animate-spin w-6 h-6 text-muted-foreground" /></div>
                 ) : cholesterolData ? (
                   <div className="space-y-3">
                     <div className="flex items-baseline gap-1.5">
