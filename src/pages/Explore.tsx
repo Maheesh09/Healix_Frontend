@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HealixLogo from "@/components/HealixLogo";
-import { Heart, MessageCircle, Brain, Shield, User, Lock, ArrowLeft, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Heart, MessageCircle, Brain, Shield, User, ArrowLeft, Phone, Mail, MapPin, Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 import { motion } from "framer-motion";
 import { PageTransition, StaggerContainer, StaggerItem, HoverCard } from "@/components/motion/MotionWrappers";
 
@@ -30,10 +30,6 @@ const trustBadges = [
   },
   {
     icon: User,
-    title: "User-controlled data access",
-  },
-  {
-    icon: Lock,
     title: "User-controlled data access",
   },
 ];
