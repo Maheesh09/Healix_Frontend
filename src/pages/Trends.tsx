@@ -63,7 +63,7 @@ const Trends = () => {
     setIsLoading(true);
     try {
       // 1. Get available names
-      const namesRes = await fetch(`${API_BASE_URL}/trends/names?${patient.id}`);
+      const namesRes = await fetch(`${API_BASE_URL}/trends/names?patient_id=${patient.id}`);
       console.log("namesRes",namesRes);
       
       let names: string[] = [];
