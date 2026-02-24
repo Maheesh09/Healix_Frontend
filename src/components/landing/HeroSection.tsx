@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import ddImage from "@/assets/dd.webp"
+
 
 const HeroSection = () => {
 
@@ -12,7 +12,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${ddImage})` }}
+
         />
         {/* Dark overlay for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
@@ -28,9 +28,9 @@ const HeroSection = () => {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-5xl lg:text-7xl font-extrabold leading-tight tracking-tight text-white mb-6">
-              Smart & Secure <br />
+              <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-healix-mint">
-                Health Profile
+
               </span>
             </h1>
 
@@ -40,8 +40,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Understand, track, and organize your complete medical history in one secure digital profile.
-              Your health data, reimagined for the modern age.
+
             </motion.p>
 
             <motion.div
