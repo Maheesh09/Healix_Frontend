@@ -55,7 +55,7 @@ const HeroSection = () => {
                 className="rounded-full bg-primary hover:bg-primary/90 text-white font-semibold px-8 h-14 text-lg shadow-lg shadow-primary/25 transition-all duration-300 hover:shadow-primary/40 hover:-translate-y-1"
               >
                 <Link to="/signup">
-                  Get Started Free
+
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
